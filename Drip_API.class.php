@@ -372,10 +372,6 @@ Class Drip_Api {
             throw new Exception("Action was not specified");
         }
 
-        if (!isset($params['occurred_at'])) {
-            $params['occurred_at'] = date('c'); // ISO 8601
-        }
-
         $account_id = $params['account_id'];
         unset($params['account_id']); // clear it from the params
 
