@@ -78,6 +78,44 @@ Class Drip_Api {
     }
 
     /**
+     * Fetch a campaign for the given account based on it's ID.
+     * @param array (account_id, campaign_id)
+     * @return array
+     */
+    public function fetch_campaign($params) {
+        if (empty($params['account_id'])) {
+            throw new Exception("Account ID not specified");
+        }
+
+        $account_id = $params['account_id'];
+        unset($params['account_id']); // clear it from the params
+
+        if (!empty($params['campaign_id'])) {
+            $campaign_id = $params['campaign_id'];
+            unset($params['campaign_id']); // clear it from the params
+        } else {
+            throw new Exception("Campaign ID was not specified. You must specify a Campaign ID");
+        }
+
+        $url = $this->api_end_point . "$account_id/campaigns/$campaign_id";
+        $res = $this->make_request($url, $params);
+
+        if (!empty($res['buffer'])) {
+            $raw_json = json_decode($res['buffer'], true);
+        }
+
+        // here we distinguish errors from no campaign
+        // when there's no json that's an error
+        $campaigns = empty($raw_json)
+                ? false
+                : empty($raw_json['campaigns'])
+                    ? array()
+                    : $raw_json['campaigns'];
+
+        return $campaigns;
+    }
+
+    /**
      * Requests the accounts for the given account.
      * Parses the response JSON and returns an array which contains: id, name, created_at etc
      * @param void
