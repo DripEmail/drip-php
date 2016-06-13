@@ -174,6 +174,34 @@ Class Drip_Api {
     }
 
     /**
+     * Sends a request to add/update a batch (up to 1000) of subscribers
+     *
+     * @param array $params
+     * @return bool
+     */
+    public function create_or_update_subscriber_batch($params) {
+        if (empty($params['account_id'])) {
+            throw new Exception("Account ID not specified");
+        }
+
+        $account_id = $params['account_id'];
+        unset($params['account_id']); // clear it from the params
+
+        $api_action = "/$account_id/subscribers/batches";
+        $url = $this->api_end_point . $api_action;
+
+        // The API wants the params to be JSON encoded
+        $req_params = $params;
+
+        $res = $this->make_request($url, $req_params, self::POST);
+
+        if ($res['http_code'] == '201') {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * 
      * @param array $params
      * @param array $params
