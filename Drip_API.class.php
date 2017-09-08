@@ -3,6 +3,7 @@
 /**
  * Drip API version 2
  *
+ * @link https://www.drip.co/
  * @author Svetoslav Marinov (SLAVI)
  */
 Class Drip_Api
@@ -17,7 +18,7 @@ Class Drip_Api
     private $timeout = 30;
     private $connect_timeout = 30;
     private $debug = false; // Requests headers and other info to be fetched from the request. Command-line windows will show info in STDERR
-    
+
     /**
      * Accepts the token and saves it internally.
      *
