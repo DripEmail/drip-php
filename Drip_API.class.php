@@ -13,7 +13,7 @@ Class Drip_Api
     private $user_agent = "Drip API PHP Wrapper (getdrip.com)";
     private $api_end_point = 'https://api.getdrip.com/v2/';
     //private $api_end_point = 'http://localhost/echo/'; // dbg only
-    private $recent_req_info = array(); // holds dbg info from a recent request
+    private $recent_req_info = []; // holds dbg info from a recent request
     private $timeout = 30;
     private $connect_timeout = 30;
     private $debug = false; // Requests headers and other info to be fetched from the request. Command-line windows will show info in STDERR
@@ -55,7 +55,7 @@ Class Drip_Api
         unset($params['account_id']); // clear it from the params
 
         if (isset($params['status'])) {
-            if (!in_array($params['status'], array('active', 'draft', 'paused', 'all'))) {
+            if (!in_array($params['status'], ['active', 'draft', 'paused', 'all'])) {
                 throw new Exception("Invalid campaign status.");
             }
         } elseif (0) {
@@ -74,7 +74,7 @@ Class Drip_Api
         $campaigns = empty($raw_json)
             ? false
             : empty($raw_json['campaigns'])
-                ? array()
+                ? []
                 : $raw_json['campaigns'];
 
         return $campaigns;
@@ -113,7 +113,7 @@ Class Drip_Api
         $campaigns = empty($raw_json)
             ? false
             : empty($raw_json['campaigns'])
-                ? array()
+                ? []
                 : $raw_json['campaigns'];
 
         return $campaigns;
@@ -137,7 +137,7 @@ Class Drip_Api
         $data = empty($raw_json)
             ? false
             : empty($raw_json['accounts'])
-                ? array()
+                ? []
                 : $raw_json['accounts'];
 
         return $data;
@@ -162,7 +162,7 @@ Class Drip_Api
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
-        $req_params = array('subscribers' => array($params));
+        $req_params = ['subscribers' => [$params]];
 
         $res = $this->make_request($url, $req_params, self::POST);
 
@@ -173,7 +173,7 @@ Class Drip_Api
         $data = empty($raw_json)
             ? false
             : empty($raw_json['subscribers'])
-                ? array()
+                ? []
                 : $raw_json['subscribers'][0];
 
         return $data;
@@ -217,7 +217,7 @@ Class Drip_Api
         $data = empty($raw_json)
             ? false
             : empty($raw_json['subscribers'])
-                ? array()
+                ? []
                 : $raw_json['subscribers'][0];
 
         return $data;
@@ -257,7 +257,7 @@ Class Drip_Api
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
-        $req_params = array('subscribers' => array($params));
+        $req_params = ['subscribers' => [$params]];
 
         $res = $this->make_request($url, $req_params, self::POST);
 
@@ -268,7 +268,7 @@ Class Drip_Api
         $data = empty($raw_json)
             ? false
             : empty($raw_json['subscribers'])
-                ? array()
+                ? []
                 : $raw_json['subscribers'][0];
 
         return $data;
@@ -315,7 +315,7 @@ Class Drip_Api
         $data = empty($raw_json)
             ? false
             : empty($raw_json['subscribers'])
-                ? array()
+                ? []
                 : $raw_json['subscribers'][0];
 
         return $data;
@@ -351,7 +351,7 @@ Class Drip_Api
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
-        $req_params = array('tags' => array($params));
+        $req_params = ['tags' => [$params]];
 
         $res = $this->make_request($url, $req_params, self::POST);
 
@@ -392,7 +392,7 @@ Class Drip_Api
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
-        $req_params = array('tags' => array($params));
+        $req_params = ['tags' => [$params]];
 
         $res = $this->make_request($url, $req_params, self::DELETE);
 
@@ -429,7 +429,7 @@ Class Drip_Api
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
-        $req_params = array('events' => array($params));
+        $req_params = ['events' => [$params]];
 
         $res = $this->make_request($url, $req_params, self::POST);
 
@@ -448,7 +448,7 @@ Class Drip_Api
      * @return type
      * @throws Exception
      */
-    public function make_request($url, $params = array(), $req_method = self::GET)
+    public function make_request($url, $params = [], $req_method = self::GET)
     {
         if (!function_exists('curl_init')) {
             throw new Exception("Cannot find cURL php extension or it's not loaded.");
@@ -488,21 +488,21 @@ Class Drip_Api
                 unset($params['__req']);
                 $url .= '?' . http_build_query($params);
             } elseif ($req_method == self::POST || $req_method == self::DELETE) {
-                $params_str = is_array($params) ? json_encode($params) : $params;
+                $params_str = is_[$params] ? json_encode($params) : $params;
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $params_str);
             }
         }
 
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept:application/json, text/javascript, */*; q=0.01',
             'Content-Type: application/vnd.api+json',
-        ));
+        ]);
 
         $buffer = curl_exec($ch);
         $status = !empty($buffer);
 
-        $data = array(
+        $data = [
             'url' => $url,
             'params' => $params,
             'status' => $status,
@@ -510,7 +510,7 @@ Class Drip_Api
             'error_no' => empty($buffer) ? curl_errno($ch) : '',
             'http_code' => curl_getinfo($ch, CURLINFO_HTTP_CODE),
             'debug' => $this->debug ? curl_getinfo($ch) : '',
-        );
+        ];
 
         curl_close($ch);
 
@@ -580,7 +580,7 @@ Class Drip_Api
               }
              */
             if (!empty($json_arr['errors'])) { // JSON
-                $messages = $error_codes = array();
+                $messages = $error_codes = [];
 
                 foreach ($json_arr['errors'] as $rec) {
                     $messages[] = $rec['message'];
@@ -615,6 +615,6 @@ Class Drip_Api
     // tmp
     public function __call($method, $args)
     {
-        return array();
+        return [];
     }
 }
