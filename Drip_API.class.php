@@ -27,11 +27,21 @@ Class Drip_Api
      */
     public function __construct($api_token)
     {
-        if (empty($api_token) || !preg_match('#^[\w-]+$#si', $api_token)) {
+        if (!self::valid_token($api_token)) {
             throw new Exception("Missing or invalid Drip API token.");
         }
 
         $this->api_token = $api_token;
+    }
+
+    /**
+     * Validate token
+     *
+     * @param $api_token
+     * @return bool
+     */
+    private static function valid_token($api_token){
+        return (!empty($api_token) && preg_match('#^[\w-]+$#si', $api_token));
     }
 
     /**
