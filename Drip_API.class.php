@@ -31,8 +31,6 @@ Class Drip_Api
      */
     public function __construct($api_token)
     {
-        $api_token = trim($api_token);
-
         if (empty($api_token) || !preg_match('#^[\w-]+$#si', $api_token)) {
             throw new Exception("Missing or invalid Drip API token.");
         }
