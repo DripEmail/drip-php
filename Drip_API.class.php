@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Drip API
+ * Drip API version 2
+ *
  * @author Svetoslav Marinov (SLAVI)
  */
 Class Drip_Api
 {
-    private $version = "2";
     private $api_token = '';
     private $error_code = '';
     private $error_message = '';
