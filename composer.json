@@ -3,8 +3,8 @@
   "description": "An object-oriented PHP wrapper for Drip's REST API v2.0",
   "homepage": "https://github.com/DripEmail/drip-php",
   "autoload": {
-    "classmap": [
-      "src/"
-    ]
+    "psr-4": {
+      "Drip\\": "src/"
+    }
   }
 }
