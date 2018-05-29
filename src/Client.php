@@ -60,8 +60,6 @@ class Client {
             if (!in_array($params['status'], array('active', 'draft', 'paused', 'all'))) {
                 throw new \Exception("Invalid campaign status.");
             }
-        } elseif (0) {
-            $params['status'] = 'active'; // api defaults to all but we want active ones
         }
 
         $url = $this->api_end_point . "$this->account_id/campaigns";
