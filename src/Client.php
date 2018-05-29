@@ -2,6 +2,9 @@
 
 namespace Drip;
 
+use Drip\Exception\InvalidApiTokenException;
+use Drip\Exception\InvalidAccountIdException;
+
 /**
  * Drip API
  * @author Svetoslav Marinov (SLAVI)
@@ -9,6 +12,7 @@ namespace Drip;
 class Client {
 	private $version = "2";
     private $api_token = '';
+    private $account_id = '';
     private $error_code = '';
     private $error_message = '';
     private $user_agent = "Drip API PHP Wrapper (getdrip.com)";
@@ -28,16 +32,22 @@ class Client {
      * Accepts the token and saves it internally.
      *
      * @param string $api_token e.g. qsor48ughrjufyu2dadraasfa1212424
+     * @param string $account_id e.g. 123456
      * @throws Exception
      */
-    public function __construct($api_token) {
+    public function __construct($api_token, $account_id) {
         $api_token = trim($api_token);
-
         if (empty($api_token) || !preg_match('#^[\w-]+$#si', $api_token)) {
-            throw new Exception("Missing or invalid Drip API token.");
+            throw new InvalidApiTokenException("Missing or invalid Drip API token.");
         }
-
         $this->api_token = $api_token;
+
+
+        $account_id = trim($account_id);
+        if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
+            throw new InvalidAccountIdException("Missing or invalid Drip API token.");
+        }
+        $this->account_id = $account_id;
     }
 
     /**

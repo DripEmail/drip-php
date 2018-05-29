@@ -10,3 +10,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Make PSR-4 compatible
 - Move to namespace `\Drip\Client`
 - Add initial tests using PHPUnit
+- Pass account_id into client constructor
