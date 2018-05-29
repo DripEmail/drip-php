@@ -26,7 +26,7 @@ class Client {
 
     /**
      * Accepts the token and saves it internally.
-     * 
+     *
      * @param string $api_token e.g. qsor48ughrjufyu2dadraasfa1212424
      * @throws Exception
      */
@@ -142,7 +142,7 @@ class Client {
 
     /**
      * Sends a request to add a subscriber and returns its record or false
-     * 
+     *
      * @param array $params
      * @param array/bool $account
      */
@@ -150,10 +150,10 @@ class Client {
         if (empty($params['account_id'])) {
             throw new Exception("Account ID not specified");
         }
-        
+
         $account_id = $params['account_id'];
         unset($params['account_id']); // clear it from the params
-        
+
         $api_action = "/$account_id/subscribers";
         $url = $this->api_end_point . $api_action;
 
@@ -176,7 +176,7 @@ class Client {
     }
 
     /**
-     * 
+     *
      * @param array $params
      * @param array $params
      */
@@ -220,7 +220,7 @@ class Client {
 
     /**
      * Subscribes a user to a given campaign for a given account.
-     * 
+     *
      * @param array $params
      * @param array $accounts
      */
@@ -269,9 +269,9 @@ class Client {
     }
 
     /**
-     * 
+     *
      * Some keys are removed from the params so they don't get send with the other data to Drip.
-     * 
+     *
      * @param array $params
      * @param array $params
      */
@@ -297,7 +297,7 @@ class Client {
 
         $api_action = "$account_id/subscribers/$subscriber_id/unsubscribe";
         $url = $this->api_end_point . $api_action;
-        
+
         $req_params = $params;
         $res = $this->make_request($url, $req_params, self::POST);
 
@@ -323,7 +323,7 @@ class Client {
      */
     public function tag_subscriber($params) {
         $status = false;
-        
+
         if (empty($params['account_id'])) {
             throw new Exception("Account ID not specified");
         }
@@ -357,7 +357,7 @@ class Client {
     /**
      *
      * This calls DELETE /:account_id/tags to remove the tags. It just returns some status code no content
-     * 
+     *
      * @param array $params
      * @param bool $status success or failure
      */
@@ -429,7 +429,7 @@ class Client {
 
         return $status;
     }
-    
+
     /**
      *
      * @param string $url
@@ -490,7 +490,7 @@ class Client {
 
         $buffer = curl_exec($ch);
         $status = !empty($buffer);
-        
+
         $data = array(
             'url'       => $url,
             'params'    => $params,
@@ -529,7 +529,7 @@ class Client {
     public function get_error_message() {
         return $this->error_message;
     }
-    
+
     /**
      * Retruns whatever was accumultaed in error_code
      * @return string
@@ -566,7 +566,7 @@ class Client {
              */
             if (!empty($json_arr['errors'])) { // JSON
                 $messages = $error_codes = array();
-                
+
                 foreach ($json_arr['errors'] as $rec) {
                     $messages[] = $rec['message'];
                     $error_codes[] = $rec['code'];
@@ -576,7 +576,7 @@ class Client {
                 $this->error_message = join("\n", $messages);
             } else { // There's no JSON in the reply so we'll extract the message from the HTML page by removing the HTML.
                 $msg = $res['buffer'];
-                
+
                 $msg = preg_replace('#.*?<body[^>]*>#si', '', $msg);
                 $msg = preg_replace('#</body[^>]*>.*#si', '', $msg);
                 $msg = strip_tags($msg);
