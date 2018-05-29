@@ -10,6 +10,8 @@ use Drip\Exception\InvalidAccountIdException;
  * @author Svetoslav Marinov (SLAVI)
  */
 class Client {
+    const VERSION = '1.0.0';
+
     private $api_token = '';
     private $account_id = '';
     private $error_code = '';
