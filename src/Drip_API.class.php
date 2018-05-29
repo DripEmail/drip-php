@@ -1,5 +1,7 @@
 <?php
 
+namespace Drip;
+
 /**
  * Drip API
  * @author Svetoslav Marinov (SLAVI)
