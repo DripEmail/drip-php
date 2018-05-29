@@ -56,22 +56,15 @@ class Client {
      * @return array
      */
     public function get_campaigns($params) {
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
         if (isset($params['status'])) {
             if (!in_array($params['status'], array('active', 'draft', 'paused', 'all'))) {
-                throw new Exception("Invalid campaign status.");
+                throw new \Exception("Invalid campaign status.");
             }
         } elseif (0) {
             $params['status'] = 'active'; // api defaults to all but we want active ones
         }
 
-        $url = $this->api_end_point . "$account_id/campaigns";
+        $url = $this->api_end_point . "$this->account_id/campaigns";
         $res = $this->make_request($url, $params);
 
         if (!empty($res['buffer'])) {
@@ -91,25 +84,18 @@ class Client {
 
     /**
      * Fetch a campaign for the given account based on it's ID.
-     * @param array (account_id, campaign_id)
+     * @param array (campaign_id)
      * @return array
      */
     public function fetch_campaign($params) {
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
         if (!empty($params['campaign_id'])) {
             $campaign_id = $params['campaign_id'];
             unset($params['campaign_id']); // clear it from the params
         } else {
-            throw new Exception("Campaign ID was not specified. You must specify a Campaign ID");
+            throw new \Exception("Campaign ID was not specified. You must specify a Campaign ID");
         }
 
-        $url = $this->api_end_point . "$account_id/campaigns/$campaign_id";
+        $url = $this->api_end_point . "$this->account_id/campaigns/$campaign_id";
         $res = $this->make_request($url, $params);
 
         if (!empty($res['buffer'])) {
@@ -157,14 +143,7 @@ class Client {
      * @param array/bool $account
      */
     public function create_or_update_subscriber($params) {
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
-        $api_action = "/$account_id/subscribers";
+        $api_action = "/$this->account_id/subscribers";
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
@@ -191,13 +170,6 @@ class Client {
      * @param array $params
      */
     public function fetch_subscriber($params) {
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
@@ -205,12 +177,12 @@ class Client {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
-            throw new Exception("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
+            throw new \Exception("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
         }
 
         $subscriber_id = urlencode($subscriber_id);
 
-        $api_action = "$account_id/subscribers/$subscriber_id";
+        $api_action = "$this->account_id/subscribers/$subscriber_id";
         $url = $this->api_end_point . $api_action;
 
         $res = $this->make_request($url);
@@ -235,29 +207,22 @@ class Client {
      * @param array $accounts
      */
     public function subscribe_subscriber($params) {
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
         if (empty($params['campaign_id'])) {
-            throw new Exception("Campaign ID not specified");
+            throw new \Exception("Campaign ID not specified");
         }
 
         $campaign_id = $params['campaign_id'];
         unset($params['campaign_id']); // clear it from the params
 
         if (empty($params['email'])) {
-            throw new Exception("Email not specified");
+            throw new \Exception("Email not specified");
         }
 
         if (!isset($params['double_optin'])) {
             $params['double_optin'] = true;
         }
 
-        $api_action = "$account_id/campaigns/$campaign_id/subscribers";
+        $api_action = "$this->account_id/campaigns/$campaign_id/subscribers";
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
@@ -286,13 +251,6 @@ class Client {
      * @param array $params
      */
     public function unsubscribe_subscriber($params) {
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
@@ -300,12 +258,12 @@ class Client {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
-            throw new Exception("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
+            throw new \Exception("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
         }
 
         $subscriber_id = urlencode($subscriber_id);
 
-        $api_action = "$account_id/subscribers/$subscriber_id/unsubscribe";
+        $api_action = "$this->account_id/subscribers/$subscriber_id/unsubscribe";
         $url = $this->api_end_point . $api_action;
 
         $req_params = $params;
@@ -334,22 +292,15 @@ class Client {
     public function tag_subscriber($params) {
         $status = false;
 
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
         if (empty($params['email'])) {
-            throw new Exception("Email was not specified");
+            throw new \Exception("Email was not specified");
         }
 
         if (empty($params['tag'])) {
-            throw new Exception("Tag was not specified");
+            throw new \Exception("Tag was not specified");
         }
 
-        $api_action = "$account_id/tags";
+        $api_action = "$this->account_id/tags";
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
@@ -374,22 +325,15 @@ class Client {
     public function untag_subscriber($params) {
         $status = false;
 
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
         if (empty($params['email'])) {
-            throw new Exception("Email was not specified");
+            throw new \Exception("Email was not specified");
         }
 
         if (empty($params['tag'])) {
-            throw new Exception("Tag was not specified");
+            throw new \Exception("Tag was not specified");
         }
 
-        $api_action = "$account_id/tags";
+        $api_action = "$this->account_id/tags";
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
@@ -414,18 +358,11 @@ class Client {
     public function record_event($params) {
         $status = false;
 
-        if (empty($params['account_id'])) {
-            throw new Exception("Account ID not specified");
-        }
-
         if (empty($params['action'])) {
-            throw new Exception("Action was not specified");
+            throw new \Exception("Action was not specified");
         }
 
-        $account_id = $params['account_id'];
-        unset($params['account_id']); // clear it from the params
-
-        $api_action = "$account_id/events";
+        $api_action = "$this->account_id/events";
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
@@ -448,9 +385,9 @@ class Client {
      * @return type
      * @throws Exception
      */
-    public function make_request($url, $params = array(), $req_method = self::GET) {
+    private function make_request($url, $params = array(), $req_method = self::GET) {
         if (!function_exists('curl_init')) {
-            throw new Exception("Cannot find cURL php extension or it's not loaded.");
+            throw new \Exception("Cannot find cURL php extension or it's not loaded.");
         }
 
         $ch = curl_init();
@@ -528,7 +465,7 @@ class Client {
      * This returns the RAW data from the each request that has been sent (if any).
      * @return arraay of arrays
      */
-    public function get_request_info() {
+    private function get_request_info() {
         return $this->recent_req_info;
     }
 
@@ -536,7 +473,7 @@ class Client {
      * Retruns whatever was accumultaed in error_message
      * @param string
      */
-    public function get_error_message() {
+    private function get_error_message() {
         return $this->error_message;
     }
 
@@ -544,7 +481,7 @@ class Client {
      * Retruns whatever was accumultaed in error_code
      * @return string
      */
-    public function get_error_code() {
+    private function get_error_code() {
         return $this->error_code;
     }
 
@@ -554,7 +491,7 @@ class Client {
      * @param array $params
      * @param array
      */
-    public function _parse_error($res) {
+    private function _parse_error($res) {
         if (empty($res['http_code']) || $res['http_code'] >= 200 && $res['http_code'] <= 299) {
             return true;
         }
@@ -605,10 +542,5 @@ class Client {
             $this->error_message = "Internal Server Error.";
             $this->error_code = $res['http_code'];
         }
-    }
-
-    // tmp
-    public function __call($method, $args) {
-        return array();
     }
 }
