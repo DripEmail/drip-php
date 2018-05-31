@@ -11,3 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Move to namespace `\Drip\Client`
 - Add initial tests using PHPUnit
 - Pass account_id into client constructor
+- Make some client methods private:
+  - `\Drip\Client#make_request`
+  - `\Drip\Client#get_request_info`
+  - `\Drip\Client#get_error_message`
+  - `\Drip\Client#get_error_code`
+  - `\Drip\Client#_parse_error`
