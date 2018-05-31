@@ -18,3 +18,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `\Drip\Client#get_error_code`
   - `\Drip\Client#_parse_error`
 - Use secure cURL settings by default
+- Allow setting of API endpoint

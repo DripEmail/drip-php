@@ -36,7 +36,9 @@ class Client {
      * @param string $account_id e.g. 123456
      * @throws Exception
      */
-    public function __construct($api_token, $account_id) {
+    public function __construct($api_token, $account_id, $options) {
+        if ($options['api_end_point']) $this->api_end_point = $options['api_end_point'];
+
         $api_token = trim($api_token);
         if (empty($api_token) || !preg_match('#^[\w-]+$#si', $api_token)) {
             throw new InvalidApiTokenException("Missing or invalid Drip API token.");
