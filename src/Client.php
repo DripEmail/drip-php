@@ -407,7 +407,7 @@ class Client {
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connect_timeout);
         curl_setopt($ch, CURLOPT_USERPWD, $this->api_token . ":" . ''); // no pwd
-        curl_setopt($ch, CURLOPT_USERAGENT, empty($params['user_agent']) ? $this->user_agent : $params['user_agent']);
+        curl_setopt($ch, CURLOPT_USERAGENT, empty($params['user_agent']) ? "$this->user_agent. Version " . self::VERSION : $params['user_agent']);
 
         if ($req_method == self::POST) { // We want post but no params to supply. Probably we have a nice link structure which includes all the info.
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
