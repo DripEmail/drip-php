@@ -2,4 +2,4 @@
 
 namespace Drip\Exception;
 
-class InvalidApiTokenException extends \Exception {}
+class InvalidApiTokenException extends DripException {}

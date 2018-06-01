@@ -2,4 +2,4 @@
 
 namespace Drip\Exception;
 
-class InvalidAccountIdException extends \Exception {}
+class InvalidAccountIdException extends DripException {}
