@@ -10,12 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Make PSR-4 compatible
 - Move to namespace `\Drip\Client`
 - Add initial tests using PHPUnit
-- Pass account_id into client constructor
-- Make some client methods private:
+- Pass account_id into client constructor (matches semantics of Ruby API client better)
+- Remove some client methods to reduce abstraction leakage:
   - `\Drip\Client#make_request`
   - `\Drip\Client#get_request_info`
   - `\Drip\Client#get_error_message`
   - `\Drip\Client#get_error_code`
   - `\Drip\Client#_parse_error`
-- Use secure cURL settings by default
+- Switch to Guzzle HTTP Client
 - Allow setting of API endpoint
