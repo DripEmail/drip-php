@@ -19,3 +19,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `\Drip\Client#_parse_error`
 - Switch to Guzzle HTTP Client
 - Allow setting of API endpoint
+- Return response object instead of array.
