@@ -64,4 +64,13 @@ class ErrorResponse implements ResponseInterface {
     public function get_http_code() {
         return $this->response->getStatusCode();
     }
+
+    /**
+     * The http response message
+     *
+     * @return string
+     */
+    public function get_http_message() {
+        return $this->response->getReasonPhrase();
+    }
 }

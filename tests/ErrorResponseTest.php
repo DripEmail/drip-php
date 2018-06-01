@@ -16,6 +16,7 @@ final class ErrorResponseTest extends TestCase
         $this->assertEquals('http://www.example.com/blah', $err_response->get_url());
         $this->assertEquals(['blah' => 'bar'], $err_response->get_params());
         $this->assertEquals(400, $err_response->get_http_code());
+        $this->assertEquals('Bad Request', $err_response->get_http_message());
     }
 
     public function testHTMLResponse()
