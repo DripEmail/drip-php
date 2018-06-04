@@ -276,6 +276,7 @@ class Client {
      */
     private function make_request($url, $params = array(), $req_method = self::GET) {
         if ($this->guzzle_stack_constructor) {
+            // This can be replaced with `($this->guzzle_stack_constructor)()` once we drop PHP5 support.
             $fn = $this->guzzle_stack_constructor;
             $stack = $fn();
         } else {
