@@ -304,7 +304,9 @@ class Client
             $fn = $this->guzzle_stack_constructor;
             $stack = $fn();
         } else {
+            // @codeCoverageIgnoreStart
             $stack = \GuzzleHttp\HandlerStack::create();
+            // @codeCoverageIgnoreEnd
         }
         $client = new \GuzzleHttp\Client([
             'base_uri' => $this->api_end_point,
@@ -328,12 +330,16 @@ class Client
                 break;
             case self::POST:
             case self::DELETE:
+            // @codeCoverageIgnoreStart
             case self::PUT:
+            // @codeCoverageIgnoreEnd
                 $req_params['body'] = is_array($params) ? json_encode($params) : $params;
                 break;
             default:
+                // @codeCoverageIgnoreStart
                 throw new UnexpectedHttpVerbException("Unexpected HTTP verb $req_method");
                 break;
+                // @codeCoverageIgnoreEnd
         }
 
         $res = $client->request($req_method, $url, $req_params);

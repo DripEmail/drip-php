@@ -397,4 +397,14 @@ final class ClientTest extends TestCase
         $this->assertEquals('POST', $req->getMethod());
         $this->assertEquals('{"events":[{"action":"blahaction"}]}', (string) $req->getBody());
     }
+
+    public function testRecordEventMissingAction()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            new Response(200, [], '{"blah":"hello"}'),
+        ]);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
+        $client->record_event([]);
+    }
 }
