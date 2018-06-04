@@ -16,10 +16,15 @@ class Client
 {
     const VERSION = '1.0.0';
 
+    /** @var string */
     private $api_token = '';
+    /** @var string */
     private $account_id = '';
+    /** @var string */
     private $api_end_point = 'https://api.getdrip.com/v2/';
+    /** @var integer */
     private $timeout = 30;
+    /** @var integer */
     private $connect_timeout = 30;
 
     /** @var callable */
@@ -136,7 +141,7 @@ class Client
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
-        } elseif (!empty($params['email'])) {
+        } else if (!empty($params['email'])) {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
@@ -189,7 +194,7 @@ class Client
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
-        } elseif (!empty($params['email'])) {
+        } else if (!empty($params['email'])) {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
