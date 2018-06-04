@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Set up composer package
 - Make PSR-4 compatible
 - Move to namespace `\Drip\Client`
-- Add initial tests using PHPUnit
 - Pass account_id into client constructor (matches semantics of Ruby API client better)
 - Remove some client methods to reduce abstraction leakage:
   - `\Drip\Client#make_request`
@@ -20,3 +19,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Switch to Guzzle HTTP Client
 - Allow setting of API endpoint
 - Return response object instead of array.
+- Fairly complete test suite
+- Code coverage metrics
+- Linter
+
+## 0.0.2
+
+* Introduces Composer
+
+## 0.0.1
+
+* Initial release
