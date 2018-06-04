@@ -8,4 +8,4 @@ php:
 install:
   - 'make install'
 script:
-  - 'make test'
+  - 'make test lint'

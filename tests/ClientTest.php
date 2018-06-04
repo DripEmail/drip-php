@@ -19,13 +19,13 @@ final class ClientTest extends TestCase
 
     public function testInvalidApiToken()
     {
-        $this->expectException(Drip\Exception\InvalidApiTokenException::class);
+        $this->expectException(\Drip\Exception\InvalidApiTokenException::class);
         new \Drip\Client("", "1234");
     }
 
     public function testInvalidAccountId()
     {
-        $this->expectException(Drip\Exception\InvalidAccountIdException::class);
+        $this->expectException(\Drip\Exception\InvalidAccountIdException::class);
         new \Drip\Client("abc123", "");
     }
 
@@ -69,7 +69,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $client->get_campaigns(['status' => 'blah']);
     }
 
@@ -111,7 +111,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $client->fetch_campaign([]);
     }
 
@@ -195,7 +195,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $response = $client->fetch_subscriber([]);
     }
 
@@ -241,7 +241,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $client->subscribe_subscriber(['email' => 'test@example.com', 'double_optin' => false]);
     }
 
@@ -251,7 +251,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $client->subscribe_subscriber(['campaign_id' => '1234', 'double_optin' => false]);
     }
 
@@ -295,7 +295,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $response = $client->unsubscribe_subscriber([]);
     }
 
@@ -324,7 +324,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $response = $client->tag_subscriber(['tag' => 'blahblah']);
     }
 
@@ -334,7 +334,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $response = $client->tag_subscriber(['email' => 'test@example.com']);
     }
 
@@ -363,7 +363,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $response = $client->untag_subscriber(['tag' => 'blahblah']);
     }
 
@@ -373,7 +373,7 @@ final class ClientTest extends TestCase
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
         ]);
-        $this->expectException(Drip\Exception\InvalidArgumentException::class);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $response = $client->untag_subscriber(['email' => 'test@example.com']);
     }
 
