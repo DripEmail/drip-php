@@ -8,6 +8,11 @@
          failOnRisky="true"
          failOnWarning="true"
 >
+
+    <php>
+        <includePath>./tests/support</includePath>
+    </php>
+
     <testsuites>
         <testsuite name="Drip PHP API Client Tests">
             <directory>./tests/</directory>

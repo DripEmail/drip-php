@@ -2,8 +2,11 @@
 
 namespace Drip;
 
+use Drip\Exception\DripException;
+use Drip\Exception\InvalidArgumentException;
 use Drip\Exception\InvalidApiTokenException;
 use Drip\Exception\InvalidAccountIdException;
+use Drip\Exception\UnexpectedHttpVerbException;
 
 /**
  * Drip API
@@ -14,20 +17,17 @@ class Client {
 
     private $api_token = '';
     private $account_id = '';
-    private $error_code = '';
-    private $error_message = '';
-    private $user_agent = "Drip API PHP Wrapper (getdrip.com)";
     private $api_end_point = 'https://api.getdrip.com/v2/';
-    //private $api_end_point = 'http://localhost/echo/'; // dbg only
-    private $recent_req_info = array(); // holds dbg info from a recent request
     private $timeout = 30;
     private $connect_timeout = 30;
-    private $debug = false; // Requests headers and other info to be fetched from the request. Command-line windows will show info in STDERR
 
-    const GET  = 1;
-    const POST = 2;
-    const DELETE = 3;
-    const PUT = 4;
+    /** @var callable */
+    private $guzzle_stack_constructor;
+
+    const GET    = "GET";
+    const POST   = "POST";
+    const DELETE = "DELETE";
+    const PUT    = "PUT";
 
     /**
      * Accepts the token and saves it internally.
@@ -36,8 +36,11 @@ class Client {
      * @param string $account_id e.g. 123456
      * @throws Exception
      */
-    public function __construct($api_token, $account_id, $options) {
-        if ($options['api_end_point']) $this->api_end_point = $options['api_end_point'];
+    public function __construct($api_token, $account_id, $options = []) {
+        if (\array_key_exists('api_end_point', $options)) $this->api_end_point = $options['api_end_point'];
+        // NOTE: For testing. Could break at any time, please do not depend on this.
+        if (\array_key_exists('guzzle_stack_constructor', $options)) $this->guzzle_stack_constructor = $options['guzzle_stack_constructor'];
+        // TODO: allow setting timeouts
 
         $api_token = trim($api_token);
         if (empty($api_token) || !preg_match('#^[\w-]+$#si', $api_token)) {
@@ -55,120 +58,68 @@ class Client {
 
     /**
      * Requests the campaigns for the given account.
-     * @param array
-     * @return array
+     * @param array $params     Set of arguments
+     *                          - status (optional)
+     * @return \Drip\ResponseInterface
      */
     public function get_campaigns($params) {
         if (isset($params['status'])) {
             if (!in_array($params['status'], array('active', 'draft', 'paused', 'all'))) {
-                throw new \Exception("Invalid campaign status.");
+                throw new InvalidArgumentException("Invalid campaign status.");
             }
         }
 
-        $url = $this->api_end_point . "$this->account_id/campaigns";
-        $res = $this->make_request($url, $params);
-
-        if (!empty($res['buffer'])) {
-            $raw_json = json_decode($res['buffer'], true);
-        }
-
-        // here we distinguish errors from no campaigns.
-        // when there's no json that's an error
-        $campaigns = empty($raw_json)
-                ? false
-                : empty($raw_json['campaigns'])
-                    ? array()
-                    : $raw_json['campaigns'];
-
-        return $campaigns;
+        return $this->make_request("$this->account_id/campaigns", $params);
     }
 
     /**
      * Fetch a campaign for the given account based on it's ID.
-     * @param array (campaign_id)
-     * @return array
+     * @param array $params     Set of arguments
+     *                          - campaign_id (required)
+     * @return \Drip\ResponseInterface
      */
     public function fetch_campaign($params) {
-        if (!empty($params['campaign_id'])) {
-            $campaign_id = $params['campaign_id'];
-            unset($params['campaign_id']); // clear it from the params
-        } else {
-            throw new \Exception("Campaign ID was not specified. You must specify a Campaign ID");
+        if (empty($params['campaign_id'])) {
+            throw new InvalidArgumentException("campaign_id was not specified");
         }
 
-        $url = $this->api_end_point . "$this->account_id/campaigns/$campaign_id";
-        $res = $this->make_request($url, $params);
+        $campaign_id = $params['campaign_id'];
+        unset($params['campaign_id']); // clear it from the params
 
-        if (!empty($res['buffer'])) {
-            $raw_json = json_decode($res['buffer'], true);
-        }
-
-        // here we distinguish errors from no campaign
-        // when there's no json that's an error
-        $campaigns = empty($raw_json)
-                ? false
-                : empty($raw_json['campaigns'])
-                    ? array()
-                    : $raw_json['campaigns'];
-
-        return $campaigns;
+        return $this->make_request("$this->account_id/campaigns/$campaign_id", $params);
     }
 
     /**
      * Requests the accounts for the given account.
      * Parses the response JSON and returns an array which contains: id, name, created_at etc
      * @param void
-     * @return bool/array
+     * @return \Drip\ResponseInterface
      */
     public function get_accounts() {
-        $url = $this->api_end_point . 'accounts';
-        $res = $this->make_request($url);
-
-        if (!empty($res['buffer'])) {
-            $raw_json = json_decode($res['buffer'], true);
-        }
-
-        $data = empty($raw_json)
-            ? false
-            : empty($raw_json['accounts'])
-                ? array()
-                : $raw_json['accounts'];
-
-        return $data;
+        return $this->make_request('accounts');
     }
 
     /**
      * Sends a request to add a subscriber and returns its record or false
      *
      * @param array $params
-     * @param array/bool $account
+     * @param array $account
+     * @return \Drip\ResponseInterface
      */
     public function create_or_update_subscriber($params) {
-        $api_action = "/$this->account_id/subscribers";
-        $url = $this->api_end_point . $api_action;
-
         // The API wants the params to be JSON encoded
-        $req_params = array('subscribers' => array($params));
-
-        $res = $this->make_request($url, $req_params, self::POST);
-
-        if (!empty($res['buffer'])) {
-            $raw_json = json_decode($res['buffer'], true);
-        }
-
-        $data = empty($raw_json)
-            ? false
-            : empty($raw_json['subscribers'])
-                ? array()
-                : $raw_json['subscribers'][0];
-
-        return $data;
+        return $this->make_request(
+            "$this->account_id/subscribers",
+            array('subscribers' => array($params)),
+            self::POST
+        );
     }
 
     /**
+     * Returns info regarding a particular subscriber
      *
      * @param array $params
-     * @param array $params
+     * @return \Drip\ResponseInterface
      */
     public function fetch_subscriber($params) {
         if (!empty($params['subscriber_id'])) {
@@ -178,27 +129,12 @@ class Client {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
-            throw new \Exception("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
+            throw new InvalidArgumentException("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
         }
 
         $subscriber_id = urlencode($subscriber_id);
 
-        $api_action = "$this->account_id/subscribers/$subscriber_id";
-        $url = $this->api_end_point . $api_action;
-
-        $res = $this->make_request($url);
-
-        if (!empty($res['buffer'])) {
-            $raw_json = json_decode($res['buffer'], true);
-        }
-
-        $data = empty($raw_json)
-            ? false
-            : empty($raw_json['subscribers'])
-                ? array()
-                : $raw_json['subscribers'][0];
-
-        return $data;
+        return $this->make_request("$this->account_id/subscribers/$subscriber_id");
     }
 
     /**
@@ -209,39 +145,24 @@ class Client {
      */
     public function subscribe_subscriber($params) {
         if (empty($params['campaign_id'])) {
-            throw new \Exception("Campaign ID not specified");
+            throw new InvalidArgumentException("Campaign ID not specified");
         }
 
         $campaign_id = $params['campaign_id'];
         unset($params['campaign_id']); // clear it from the params
 
         if (empty($params['email'])) {
-            throw new \Exception("Email not specified");
+            throw new InvalidArgumentException("Email not specified");
         }
 
         if (!isset($params['double_optin'])) {
             $params['double_optin'] = true;
         }
 
-        $api_action = "$this->account_id/campaigns/$campaign_id/subscribers";
-        $url = $this->api_end_point . $api_action;
-
         // The API wants the params to be JSON encoded
         $req_params = array('subscribers' => array($params));
 
-        $res = $this->make_request($url, $req_params, self::POST);
-
-        if (!empty($res['buffer'])) {
-            $raw_json = json_decode($res['buffer'], true);
-        }
-
-        $data = empty($raw_json)
-            ? false
-            : empty($raw_json['subscribers'])
-                ? array()
-                : $raw_json['subscribers'][0];
-
-        return $data;
+        return $this->make_request("$this->account_id/campaigns/$campaign_id/subscribers", $req_params, self::POST);
     }
 
     /**
@@ -259,28 +180,11 @@ class Client {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
-            throw new \Exception("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
+            throw new InvalidArgumentException("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
         }
 
         $subscriber_id = urlencode($subscriber_id);
-
-        $api_action = "$this->account_id/subscribers/$subscriber_id/unsubscribe";
-        $url = $this->api_end_point . $api_action;
-
-        $req_params = $params;
-        $res = $this->make_request($url, $req_params, self::POST);
-
-        if (!empty($res['buffer'])) {
-            $raw_json = json_decode($res['buffer'], true);
-        }
-
-        $data = empty($raw_json)
-            ? false
-            : empty($raw_json['subscribers'])
-                ? array()
-                : $raw_json['subscribers'][0];
-
-        return $data;
+        return $this->make_request("$this->account_id/subscribers/$subscriber_id/unsubscribe", $params, self::POST);
     }
 
     /**
@@ -291,29 +195,18 @@ class Client {
      * @param bool $status
      */
     public function tag_subscriber($params) {
-        $status = false;
-
         if (empty($params['email'])) {
-            throw new \Exception("Email was not specified");
+            throw new InvalidArgumentException("Email was not specified");
         }
 
         if (empty($params['tag'])) {
-            throw new \Exception("Tag was not specified");
+            throw new InvalidArgumentException("Tag was not specified");
         }
-
-        $api_action = "$this->account_id/tags";
-        $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
         $req_params = array('tags' => array($params));
 
-        $res = $this->make_request($url, $req_params, self::POST);
-
-        if ($res['http_code'] == 201) {
-           $status = true;
-        }
-
-        return $status;
+        return $this->make_request("$this->account_id/tags", $req_params, self::POST);
     }
 
     /**
@@ -324,29 +217,18 @@ class Client {
      * @param bool $status success or failure
      */
     public function untag_subscriber($params) {
-        $status = false;
-
         if (empty($params['email'])) {
-            throw new \Exception("Email was not specified");
+            throw new InvalidArgumentException("Email was not specified");
         }
 
         if (empty($params['tag'])) {
-            throw new \Exception("Tag was not specified");
+            throw new InvalidArgumentException("Tag was not specified");
         }
-
-        $api_action = "$this->account_id/tags";
-        $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
         $req_params = array('tags' => array($params));
 
-        $res = $this->make_request($url, $req_params, self::DELETE);
-
-        if ($res['http_code'] == 204) {
-           $status = true;
-        }
-
-        return $status;
+        return $this->make_request("$this->account_id/tags", $req_params, self::DELETE);
     }
 
     /**
@@ -357,25 +239,31 @@ class Client {
      * @param bool
      */
     public function record_event($params) {
-        $status = false;
-
         if (empty($params['action'])) {
-            throw new \Exception("Action was not specified");
+            throw new InvalidArgumentException("Action was not specified");
         }
-
-        $api_action = "$this->account_id/events";
-        $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
         $req_params = array('events' => array($params));
 
-        $res = $this->make_request($url, $req_params, self::POST);
+        return $this->make_request("$this->account_id/events", $req_params, self::POST);
+    }
 
-        if ($res['http_code'] == 204) {
-           $status = true;
-        }
+    /**
+     * @return string
+     */
+    private function user_agent() {
+        return "Drip API PHP Wrapper (getdrip.com). Version " . self::VERSION;
+    }
 
-        return $status;
+    /**
+     * Determines whether the response is a success.
+     *
+     * @param int $code
+     * @return boolean
+     */
+    private function is_success_response($code) {
+        return $code >= 200 && $code <= 299;
     }
 
     /**
@@ -383,165 +271,44 @@ class Client {
      * @param string $url
      * @param array $params
      * @param int $req_method
-     * @return type
+     * @return \Drip\ResponseInterface
      * @throws Exception
      */
     private function make_request($url, $params = array(), $req_method = self::GET) {
-        if (!function_exists('curl_init')) {
-            throw new \Exception("Cannot find cURL php extension or it's not loaded.");
+        $stack = $this->guzzle_stack_constructor ? ($this->guzzle_stack_constructor)() : \GuzzleHttp\HandlerStack::create();
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => $this->api_end_point,
+            'handler' => $stack,
+        ]);
+
+        $req_params = [
+            'auth' => [$this->api_token, ''],
+            'timeout' => $this->timeout,
+            'connect_timeout' => $this->connect_timeout,
+            'headers' => [
+                'User-Agent' => $this->user_agent(),
+                'Accept' => 'application/json, text/javascript, */*; q=0.01',
+                'Content-Type' => 'application/vnd.api+json',
+            ],
+        ];
+
+        switch ($req_method) {
+            case self::GET:
+                $req_params['query'] = $params;
+                break;
+            case self::POST:
+            case self::DELETE:
+            case self::PUT:
+                $req_params['body'] = is_array($params) ? json_encode($params) : $params;
+                break;
+            default:
+                throw new UnexpectedHttpVerbException("Unexpected HTTP verb $req_method");
+                break;
         }
 
-        $ch = curl_init();
+        $res = $client->request($req_method, $url, $req_params);
 
-        if ($this->debug) {
-            //curl_setopt($ch, CURLOPT_HEADER, true);
-            // TRUE to output verbose information. Writes output to STDERR, or the file specified using CURLOPT_STDERR.
-            curl_setopt($ch, CURLOPT_VERBOSE, true);
-        }
-
-        curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-        curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connect_timeout);
-        curl_setopt($ch, CURLOPT_USERPWD, $this->api_token . ":" . ''); // no pwd
-        curl_setopt($ch, CURLOPT_USERAGENT, empty($params['user_agent']) ? "$this->user_agent. Version " . self::VERSION : $params['user_agent']);
-
-        if ($req_method == self::POST) { // We want post but no params to supply. Probably we have a nice link structure which includes all the info.
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        } elseif ($req_method == self::DELETE) {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-        } elseif ($req_method == self::PUT) {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-        }
-
-        if (!empty($params)) {
-            if ((isset($params['__req']) && strtolower($params['__req']) == 'get')
-                    || $req_method == self::GET) {
-                unset($params['__req']);
-                $url .= '?' . http_build_query($params);
-            } elseif ($req_method == self::POST || $req_method == self::DELETE) {
-                $params_str = is_array($params) ? json_encode($params) : $params;
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $params_str);
-            }
-        }
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Accept:application/json, text/javascript, */*; q=0.01',
-            'Content-Type: application/vnd.api+json',
-        ));
-
-        $buffer = curl_exec($ch);
-        $status = !empty($buffer);
-
-        $data = array(
-            'url'       => $url,
-            'params'    => $params,
-            'status'    => $status,
-            'error'     => empty($buffer) ? curl_error($ch) : '',
-            'error_no'  => empty($buffer) ? curl_errno($ch) : '',
-            'http_code' => curl_getinfo($ch, CURLINFO_HTTP_CODE),
-            'debug'     => $this->debug ? curl_getinfo($ch) : '',
-        );
-
-        curl_close($ch);
-
-        // remove some weird headers HTTP/1.1 100 Continue or HTTP/1.1 200 OK
-        $buffer = preg_replace('#HTTP/[\d.]+\s+\d+\s+\w+[\r\n]+#si', '', $buffer);
-        $buffer = trim($buffer);
-        $data['buffer'] = $buffer;
-
-        $this->_parse_error($data);
-        $this->recent_req_info = $data;
-
-        return $data;
-    }
-
-    /**
-     * This returns the RAW data from the each request that has been sent (if any).
-     * @return arraay of arrays
-     */
-    private function get_request_info() {
-        return $this->recent_req_info;
-    }
-
-    /**
-     * Retruns whatever was accumultaed in error_message
-     * @param string
-     */
-    private function get_error_message() {
-        return $this->error_message;
-    }
-
-    /**
-     * Retruns whatever was accumultaed in error_code
-     * @return string
-     */
-    private function get_error_code() {
-        return $this->error_code;
-    }
-
-    /**
-     * Some keys are removed from the params so they don't get send with the other data to Drip.
-     *
-     * @param array $params
-     * @param array
-     */
-    private function _parse_error($res) {
-        if (empty($res['http_code']) || $res['http_code'] >= 200 && $res['http_code'] <= 299) {
-            return true;
-        }
-
-        if (empty($res['buffer'])) {
-            $this->error_message = "Response from the server.";
-            $this->error_code = $res['http_code'];
-        } elseif (!empty($res['buffer'])) {
-            $json_arr = json_decode($res['buffer'], true);
-
-            // The JSON error response looks like this.
-            /*
-             {
-                "errors": [{
-                  "code": "authorization_error",
-                  "message": "You are not authorized to access this resource"
-                }]
-              }
-             */
-            if (!empty($json_arr['errors'])) { // JSON
-                $messages = $error_codes = array();
-
-                foreach ($json_arr['errors'] as $rec) {
-                    $messages[] = $rec['message'];
-                    $error_codes[] = $rec['code'];
-                }
-
-                $this->error_code = join(", ", $error_codes);
-                $this->error_message = join("\n", $messages);
-            } else { // There's no JSON in the reply so we'll extract the message from the HTML page by removing the HTML.
-                $msg = $res['buffer'];
-
-                $msg = preg_replace('#.*?<body[^>]*>#si', '', $msg);
-                $msg = preg_replace('#</body[^>]*>.*#si', '', $msg);
-                $msg = strip_tags($msg);
-                $msg = preg_replace('#[\r\n]#si', '', $msg);
-                $msg = preg_replace('#\s+#si', ' ', $msg);
-                $msg = trim($msg);
-                $msg = substr($msg, 0, 256);
-
-                $this->error_code = $res['http_code'];
-                $this->error_message = $msg;
-            }
-        } elseif ($res['http_code'] >= 400 || $res['http_code'] <= 499) {
-            $this->error_message = "Not authorized.";
-            $this->error_code = $res['http_code'];
-        } elseif ($res['http_code'] >= 500 || $res['http_code'] <= 599) {
-            $this->error_message = "Internal Server Error.";
-            $this->error_code = $res['http_code'];
-        }
+        $success_klass = $this->is_success_response($res->getStatusCode()) ? \Drip\SuccessResponse::class : \Drip\ErrorResponse::class;
+        return new $success_klass($url, $params, $res);
     }
 }
