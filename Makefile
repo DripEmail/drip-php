@@ -1,4 +1,4 @@
-.PHONY test lint install
+.PHONY: test lint install
 
 install:
 	composer install
