@@ -275,7 +275,12 @@ class Client {
      * @throws Exception
      */
     private function make_request($url, $params = array(), $req_method = self::GET) {
-        $stack = $this->guzzle_stack_constructor ? ($this->guzzle_stack_constructor)() : \GuzzleHttp\HandlerStack::create();
+        if ($this->guzzle_stack_constructor) {
+            $fn = $this->guzzle_stack_constructor;
+            $stack = $fn();
+        } else {
+            $stack = \GuzzleHttp\HandlerStack::create();
+        }
         $client = new \GuzzleHttp\Client([
             'base_uri' => $this->api_end_point,
             'handler' => $stack,
