@@ -1,5 +1,7 @@
 <?php
 
+namespace DripTests;
+
 use PHPUnit\Framework\TestCase;
 
 final class SuccessResponseTest extends TestCase

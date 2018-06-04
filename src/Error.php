@@ -5,7 +5,8 @@ namespace Drip;
 /**
  * A reason for a response failure.
  */
-class Error {
+class Error
+{
     /** @var string */
     private $code;
     /** @var string */
@@ -15,7 +16,8 @@ class Error {
      * @param string $code      Coded error reason
      * @param string $message   Human readable error message.
      */
-    public function __construct($code, $message) {
+    public function __construct($code, $message)
+    {
         $this->code = $code;
         $this->message = $message;
     }
@@ -25,7 +27,8 @@ class Error {
      *
      * @return string
      */
-    public function get_code() {
+    public function get_code()
+    {
         return $this->code;
     }
 
@@ -34,7 +37,8 @@ class Error {
      *
      * @return string
      */
-    public function get_message() {
+    public function get_message()
+    {
         return $this->message;
     }
 }

@@ -7,4 +7,4 @@ test:
 	./vendor/bin/phpunit
 
 lint:
-	./vendor/bin/phpcs test/ src/
+	./vendor/bin/phpcs -s

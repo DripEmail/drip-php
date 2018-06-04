@@ -5,7 +5,8 @@ namespace Drip;
 /**
  * Base response class
  */
-abstract class AbstractResponse implements ResponseInterface {
+abstract class AbstractResponse implements ResponseInterface
+{
     /** @var string */
     protected $url;
     /** @var array */
@@ -15,7 +16,8 @@ abstract class AbstractResponse implements ResponseInterface {
     /** @var array */
     protected $body;
 
-    public function __construct($url, $params, \Psr\Http\Message\ResponseInterface $response) {
+    public function __construct($url, $params, \Psr\Http\Message\ResponseInterface $response)
+    {
         $this->url = $url;
         $this->params = $params;
         $this->response = $response;
@@ -27,7 +29,8 @@ abstract class AbstractResponse implements ResponseInterface {
      *
      * @return boolean
      */
-    public function is_success() {
+    public function is_success()
+    {
         return $this->get_http_code() >= 200 && $this->get_http_code() <= 299;
     }
 
@@ -36,7 +39,8 @@ abstract class AbstractResponse implements ResponseInterface {
      *
      * @return string
      */
-    public function get_url() {
+    public function get_url()
+    {
         return $this->url;
     }
 
@@ -45,7 +49,8 @@ abstract class AbstractResponse implements ResponseInterface {
      *
      * @return array
      */
-    public function get_params() {
+    public function get_params()
+    {
         return $this->params;
     }
 
@@ -54,7 +59,8 @@ abstract class AbstractResponse implements ResponseInterface {
      *
      * @return integer
      */
-    public function get_http_code() {
+    public function get_http_code()
+    {
         return $this->response->getStatusCode();
     }
 
@@ -63,7 +69,8 @@ abstract class AbstractResponse implements ResponseInterface {
      *
      * @return string
      */
-    public function get_http_message() {
+    public function get_http_message()
+    {
         return $this->response->getReasonPhrase();
     }
 }

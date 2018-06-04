@@ -2,4 +2,6 @@
 
 namespace Drip\Exception;
 
-class UnexpectedHttpVerbException extends DripException {}
+class UnexpectedHttpVerbException extends DripException
+{
+}

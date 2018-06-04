@@ -12,7 +12,8 @@ use Drip\Exception\UnexpectedHttpVerbException;
  * Drip API
  * @author Svetoslav Marinov (SLAVI)
  */
-class Client {
+class Client
+{
     const VERSION = '1.0.0';
 
     private $api_token = '';
@@ -36,10 +37,15 @@ class Client {
      * @param string $account_id e.g. 123456
      * @throws Exception
      */
-    public function __construct($api_token, $account_id, $options = []) {
-        if (\array_key_exists('api_end_point', $options)) $this->api_end_point = $options['api_end_point'];
+    public function __construct($api_token, $account_id, $options = [])
+    {
+        if (\array_key_exists('api_end_point', $options)) {
+            $this->api_end_point = $options['api_end_point'];
+        }
         // NOTE: For testing. Could break at any time, please do not depend on this.
-        if (\array_key_exists('guzzle_stack_constructor', $options)) $this->guzzle_stack_constructor = $options['guzzle_stack_constructor'];
+        if (\array_key_exists('guzzle_stack_constructor', $options)) {
+            $this->guzzle_stack_constructor = $options['guzzle_stack_constructor'];
+        }
         // TODO: allow setting timeouts
 
         $api_token = trim($api_token);
@@ -62,7 +68,8 @@ class Client {
      *                          - status (optional)
      * @return \Drip\ResponseInterface
      */
-    public function get_campaigns($params) {
+    public function get_campaigns($params)
+    {
         if (isset($params['status'])) {
             if (!in_array($params['status'], array('active', 'draft', 'paused', 'all'))) {
                 throw new InvalidArgumentException("Invalid campaign status.");
@@ -78,7 +85,8 @@ class Client {
      *                          - campaign_id (required)
      * @return \Drip\ResponseInterface
      */
-    public function fetch_campaign($params) {
+    public function fetch_campaign($params)
+    {
         if (empty($params['campaign_id'])) {
             throw new InvalidArgumentException("campaign_id was not specified");
         }
@@ -95,7 +103,8 @@ class Client {
      * @param void
      * @return \Drip\ResponseInterface
      */
-    public function get_accounts() {
+    public function get_accounts()
+    {
         return $this->make_request('accounts');
     }
 
@@ -106,7 +115,8 @@ class Client {
      * @param array $account
      * @return \Drip\ResponseInterface
      */
-    public function create_or_update_subscriber($params) {
+    public function create_or_update_subscriber($params)
+    {
         // The API wants the params to be JSON encoded
         return $this->make_request(
             "$this->account_id/subscribers",
@@ -121,7 +131,8 @@ class Client {
      * @param array $params
      * @return \Drip\ResponseInterface
      */
-    public function fetch_subscriber($params) {
+    public function fetch_subscriber($params)
+    {
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
@@ -143,7 +154,8 @@ class Client {
      * @param array $params
      * @param array $accounts
      */
-    public function subscribe_subscriber($params) {
+    public function subscribe_subscriber($params)
+    {
         if (empty($params['campaign_id'])) {
             throw new InvalidArgumentException("Campaign ID not specified");
         }
@@ -172,7 +184,8 @@ class Client {
      * @param array $params
      * @param array $params
      */
-    public function unsubscribe_subscriber($params) {
+    public function unsubscribe_subscriber($params)
+    {
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
@@ -194,7 +207,8 @@ class Client {
      * @param array $params
      * @param bool $status
      */
-    public function tag_subscriber($params) {
+    public function tag_subscriber($params)
+    {
         if (empty($params['email'])) {
             throw new InvalidArgumentException("Email was not specified");
         }
@@ -216,7 +230,8 @@ class Client {
      * @param array $params
      * @param bool $status success or failure
      */
-    public function untag_subscriber($params) {
+    public function untag_subscriber($params)
+    {
         if (empty($params['email'])) {
             throw new InvalidArgumentException("Email was not specified");
         }
@@ -238,7 +253,8 @@ class Client {
      * @param array $params
      * @param bool
      */
-    public function record_event($params) {
+    public function record_event($params)
+    {
         if (empty($params['action'])) {
             throw new InvalidArgumentException("Action was not specified");
         }
@@ -252,7 +268,8 @@ class Client {
     /**
      * @return string
      */
-    private function user_agent() {
+    private function user_agent()
+    {
         return "Drip API PHP Wrapper (getdrip.com). Version " . self::VERSION;
     }
 
@@ -262,7 +279,8 @@ class Client {
      * @param int $code
      * @return boolean
      */
-    private function is_success_response($code) {
+    private function is_success_response($code)
+    {
         return $code >= 200 && $code <= 299;
     }
 
@@ -274,7 +292,8 @@ class Client {
      * @return \Drip\ResponseInterface
      * @throws Exception
      */
-    private function make_request($url, $params = array(), $req_method = self::GET) {
+    private function make_request($url, $params = array(), $req_method = self::GET)
+    {
         if ($this->guzzle_stack_constructor) {
             // This can be replaced with `($this->guzzle_stack_constructor)()` once we drop PHP5 support.
             $fn = $this->guzzle_stack_constructor;

@@ -1,5 +1,7 @@
 <?php
 
+namespace DripTests;
+
 use PHPUnit\Framework\TestCase;
 
 use GuzzleHttp\Psr7\Response;
@@ -117,7 +119,8 @@ final class ClientTest extends TestCase
 
     // #get_accounts
 
-    public function testGetAccountsBaseCase() {
+    public function testGetAccountsBaseCase()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -135,7 +138,8 @@ final class ClientTest extends TestCase
 
     // #create_or_update_subscriber
 
-    public function testCreateOrUpdateSubscriberBaseCase() {
+    public function testCreateOrUpdateSubscriberBaseCase()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -153,7 +157,8 @@ final class ClientTest extends TestCase
 
     // #fetch_subscriber
 
-    public function testFetchSubscriberById() {
+    public function testFetchSubscriberById()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -168,7 +173,8 @@ final class ClientTest extends TestCase
         $this->assertEquals('GET', $req->getMethod());
     }
 
-    public function testFetchSubscriberByEmail() {
+    public function testFetchSubscriberByEmail()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -183,7 +189,8 @@ final class ClientTest extends TestCase
         $this->assertEquals('GET', $req->getMethod());
     }
 
-    public function testFetchSubscriberWithNeitherEmailNorId() {
+    public function testFetchSubscriberWithNeitherEmailNorId()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -194,7 +201,8 @@ final class ClientTest extends TestCase
 
     // #subscribe_subscriber
 
-    public function testSubscribeSubscriberBaseCase() {
+    public function testSubscribeSubscriberBaseCase()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -210,7 +218,8 @@ final class ClientTest extends TestCase
         $this->assertEquals('{"subscribers":[{"email":"test@example.com","double_optin":true}]}', (string) $req->getBody());
     }
 
-    public function testSubscribeSubscriberWithDoubleOptin() {
+    public function testSubscribeSubscriberWithDoubleOptin()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -226,7 +235,8 @@ final class ClientTest extends TestCase
         $this->assertEquals('{"subscribers":[{"email":"test@example.com","double_optin":false}]}', (string) $req->getBody());
     }
 
-    public function testSubscribeSubscriberWithoutCampaignId() {
+    public function testSubscribeSubscriberWithoutCampaignId()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -235,7 +245,8 @@ final class ClientTest extends TestCase
         $client->subscribe_subscriber(['email' => 'test@example.com', 'double_optin' => false]);
     }
 
-    public function testSubscribeSubscriberWithoutEmail() {
+    public function testSubscribeSubscriberWithoutEmail()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -246,7 +257,8 @@ final class ClientTest extends TestCase
 
     // #unsubscribe_subscriber
 
-    public function testUnsubscribeSubscriberById() {
+    public function testUnsubscribeSubscriberById()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -261,7 +273,8 @@ final class ClientTest extends TestCase
         $this->assertEquals('POST', $req->getMethod());
     }
 
-    public function testUnsubscribeSubscriberByEmail() {
+    public function testUnsubscribeSubscriberByEmail()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -276,7 +289,8 @@ final class ClientTest extends TestCase
         $this->assertEquals('POST', $req->getMethod());
     }
 
-    public function testUnsubscribeSubscriberWithNeitherEmailNorId() {
+    public function testUnsubscribeSubscriberWithNeitherEmailNorId()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -287,7 +301,8 @@ final class ClientTest extends TestCase
 
     // #tag_subscriber
 
-    public function testTagSubscriberBaseCase() {
+    public function testTagSubscriberBaseCase()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -303,7 +318,8 @@ final class ClientTest extends TestCase
         $this->assertEquals('{"tags":[{"email":"test@example.com","tag":"blahblah"}]}', (string) $req->getBody());
     }
 
-    public function testTagSubscriberWithoutEmail() {
+    public function testTagSubscriberWithoutEmail()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -312,7 +328,8 @@ final class ClientTest extends TestCase
         $response = $client->tag_subscriber(['tag' => 'blahblah']);
     }
 
-    public function testTagSubscriberWithoutTag() {
+    public function testTagSubscriberWithoutTag()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -323,7 +340,8 @@ final class ClientTest extends TestCase
 
     // #untag_subscriber
 
-    public function testUntagSubscriberBaseCase() {
+    public function testUntagSubscriberBaseCase()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -339,7 +357,8 @@ final class ClientTest extends TestCase
         $this->assertEquals('{"tags":[{"email":"test@example.com","tag":"blahblah"}]}', (string) $req->getBody());
     }
 
-    public function testUntagSubscriberWithoutEmail() {
+    public function testUntagSubscriberWithoutEmail()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),
@@ -348,7 +367,8 @@ final class ClientTest extends TestCase
         $response = $client->untag_subscriber(['tag' => 'blahblah']);
     }
 
-    public function testUntagSubscriberWithoutTag() {
+    public function testUntagSubscriberWithoutTag()
+    {
         $mocked_requests = [];
         $client = GuzzleHelpers::mocked_client($mocked_requests, [
             new Response(200, [], '{"blah":"hello"}'),

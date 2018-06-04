@@ -2,7 +2,8 @@
 
 namespace Drip;
 
-interface ResponseInterface {
+interface ResponseInterface
+{
     public function is_success();
     public function get_url();
     public function get_params();

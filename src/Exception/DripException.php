@@ -2,4 +2,6 @@
 
 namespace Drip\Exception;
 
-class DripException extends \Exception {}
+class DripException extends \Exception
+{
+}

@@ -1,5 +1,7 @@
 <?php
 
+namespace DripTests;
+
 use PHPUnit\Framework\TestCase;
 
 final class ErrorTest extends TestCase

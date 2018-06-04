@@ -2,4 +2,6 @@
 
 namespace Drip\Exception;
 
-class InvalidArgumentException extends DripException {}
+class InvalidArgumentException extends DripException
+{
+}
