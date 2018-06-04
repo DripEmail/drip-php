@@ -27,3 +27,10 @@ $client = new \Drip\Client("YOUR_ACCESS_TOKEN", "YOUR_ACCOUNT_ID");
 Your account ID can be found [here](https://www.getdrip.com/settings/site).
 Most API actions require an account ID, with the exception of methods like
 the "list accounts" endpoint.
+
+
+## PHP version support
+
+We attempt to support versions of PHP that are supported upstream: http://php.net/supported-versions.php
+
+For the actual supported list, see `.travis.yml`.
