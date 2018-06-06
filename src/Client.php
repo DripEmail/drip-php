@@ -120,7 +120,6 @@ class Client
      * Sends a request to add a subscriber and returns its record or false
      *
      * @param array $params
-     * @param array $account
      * @return \Drip\ResponseInterface
      */
     public function create_or_update_subscriber($params)
@@ -160,7 +159,6 @@ class Client
      * Subscribes a user to a given campaign for a given account.
      *
      * @param array $params
-     * @param array $accounts
      */
     public function subscribe_subscriber($params)
     {
