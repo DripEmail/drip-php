@@ -188,7 +188,6 @@ class Client
      * Some keys are removed from the params so they don't get send with the other data to Drip.
      *
      * @param array $params
-     * @param array $params
      */
     public function unsubscribe_subscriber($params)
     {
