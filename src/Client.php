@@ -40,6 +40,9 @@ class Client
      *
      * @param string $api_token e.g. qsor48ughrjufyu2dadraasfa1212424
      * @param string $account_id e.g. 123456
+     * @param array  $options
+     *               * `api_end_point` (mostly for Drip internal testing)
+     *               * `guzzle_stack_constructor` (for test suite, may break at any time, do not use)
      * @throws Exception
      */
     public function __construct($api_token, $account_id, $options = [])
