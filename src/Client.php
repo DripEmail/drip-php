@@ -2,11 +2,11 @@
 
 namespace Drip;
 
-use Drip\Exception\DripException;
-use Drip\Exception\InvalidArgumentException;
-use Drip\Exception\InvalidApiTokenException;
 use Drip\Exception\InvalidAccountIdException;
+use Drip\Exception\InvalidApiTokenException;
+use Drip\Exception\InvalidArgumentException;
 use Drip\Exception\UnexpectedHttpVerbException;
+use Exception;
 
 /**
  * Drip API
@@ -72,9 +72,11 @@ class Client
 
     /**
      * Requests the campaigns for the given account.
-     * @param array $params     Set of arguments
+     * @param array $params Set of arguments
      *                          - status (optional)
      * @return \Drip\ResponseInterface
+     * @throws InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function get_campaigns($params)
     {
@@ -89,9 +91,11 @@ class Client
 
     /**
      * Fetch a campaign for the given account based on it's ID.
-     * @param array $params     Set of arguments
+     * @param array $params Set of arguments
      *                          - campaign_id (required)
      * @return \Drip\ResponseInterface
+     * @throws InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function fetch_campaign($params)
     {
@@ -108,8 +112,8 @@ class Client
     /**
      * Requests the accounts for the given account.
      * Parses the response JSON and returns an array which contains: id, name, created_at etc
-     * @param void
      * @return \Drip\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function get_accounts()
     {
@@ -121,6 +125,7 @@ class Client
      *
      * @param array $params
      * @return \Drip\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function create_or_update_subscriber($params)
     {
@@ -137,6 +142,8 @@ class Client
      *
      * @param array $params
      * @return \Drip\ResponseInterface
+     * @throws InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function fetch_subscriber($params)
     {
@@ -159,6 +166,9 @@ class Client
      * Subscribes a user to a given campaign for a given account.
      *
      * @param array $params
+     * @return ResponseInterface
+     * @throws InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function subscribe_subscriber($params)
     {
@@ -188,6 +198,9 @@ class Client
      * Some keys are removed from the params so they don't get send with the other data to Drip.
      *
      * @param array $params
+     * @return ResponseInterface
+     * @throws InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function unsubscribe_subscriber($params)
     {
@@ -210,7 +223,9 @@ class Client
      * This calls POST /:account_id/tags to add the tag. It just returns some status code no content
      *
      * @param array $params
-     * @param bool $status
+     * @return ResponseInterface
+     * @throws InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function tag_subscriber($params)
     {
@@ -233,7 +248,9 @@ class Client
      * This calls DELETE /:account_id/tags to remove the tags. It just returns some status code no content
      *
      * @param array $params
-     * @param bool $status success or failure
+     * @return ResponseInterface
+     * @throws InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function untag_subscriber($params)
     {
@@ -256,7 +273,9 @@ class Client
      * Posts an event specified by the user.
      *
      * @param array $params
-     * @param bool
+     * @return ResponseInterface
+     * @throws InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function record_event($params)
     {
@@ -293,11 +312,12 @@ class Client
      *
      * @param string $url
      * @param array $params
-     * @param int $req_method
+     * @param $req_method
      * @return \Drip\ResponseInterface
      * @throws Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function make_request($url, $params = array(), $req_method = self::GET)
+    protected function make_request($url, $params = array(), $req_method = self::GET)
     {
         if ($this->guzzle_stack_constructor) {
             // This can be replaced with `($this->guzzle_stack_constructor)()` once we drop PHP5 support.
@@ -344,7 +364,7 @@ class Client
 
         $res = $client->request($req_method, $url, $req_params);
 
-        $success_klass = $this->is_success_response($res->getStatusCode()) ? \Drip\SuccessResponse::class : \Drip\ErrorResponse::class;
+        $success_klass = $this->is_success_response($res->getStatusCode()) ? SuccessResponse::class : ErrorResponse::class;
         return new $success_klass($url, $params, $res);
     }
 }
