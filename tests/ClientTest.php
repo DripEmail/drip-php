@@ -155,6 +155,25 @@ final class ClientTest extends TestCase
         $this->assertEquals('{"subscribers":[{"blahparam":"blahvalue"}]}', (string) $req->getBody());
     }
 
+    // #create_or_update_subscribers
+
+    public function testCreateOrUpdateSubscribersBaseCase()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            new Response(200, [], '{"blah":"hello"}'),
+        ]);
+        $response = $client->create_or_update_subscribers(['batches' => [['subscribers' => [['blah1' => 'blah111'],['blah2' => 'blah222']]]]]);
+        $this->assertTrue($response->is_success());
+        $this->assertEquals('hello', $response->get_contents()['blah']);
+
+        $this->assertCount(1, $mocked_requests);
+        $req = $mocked_requests[0]['request'];
+        $this->assertEquals('http://api.example.com/v9001/12345/subscribers/batches', $req->getUri());
+        $this->assertEquals('POST', $req->getMethod());
+        $this->assertEquals('{"batches":[{"subscribers":[{"blah1":"blah111"},{"blah2":"blah222"}]}]}', (string) $req->getBody());
+    }
+
     // #fetch_subscriber
 
     public function testFetchSubscriberById()
