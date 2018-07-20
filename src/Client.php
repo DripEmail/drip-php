@@ -133,6 +133,21 @@ class Client
     }
 
     /**
+     * Sends a request to add/update a batch (up to 1000) of subscribers
+     *
+     * @param array $params
+     * @return \Drip\ResponseInterface
+     */
+    public function create_or_update_subscribers($params)
+    {
+        return $this->make_request(
+            "$this->account_id/subscribers/batches",
+            $params,
+            self::POST
+        );
+    }
+
+    /**
      * Returns info regarding a particular subscriber
      *
      * @param array $params
