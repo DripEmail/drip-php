@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 * [#15](https://github.com/DripEmail/drip-php/pull/15) - Added `\Drip\Client#create_or_update_subscribers` method (@j831)
+* Make private methods protected so that people can subclass. Fixes [#16](https://github.com/DripEmail/drip-php/issues/16)
 * Your improvement here!
 
 ## 1.0.0
