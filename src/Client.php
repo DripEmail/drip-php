@@ -17,18 +17,18 @@ class Client
     const VERSION = '1.0.0';
 
     /** @var string */
-    private $api_token = '';
+    protected $api_token = '';
     /** @var string */
-    private $account_id = '';
+    protected $account_id = '';
     /** @var string */
-    private $api_end_point = 'https://api.getdrip.com/v2/';
+    protected $api_end_point = 'https://api.getdrip.com/v2/';
     /** @var integer */
-    private $timeout = 30;
+    protected $timeout = 30;
     /** @var integer */
-    private $connect_timeout = 30;
+    protected $connect_timeout = 30;
 
     /** @var callable */
-    private $guzzle_stack_constructor;
+    protected $guzzle_stack_constructor;
 
     const GET    = "GET";
     const POST   = "POST";
@@ -288,7 +288,7 @@ class Client
     /**
      * @return string
      */
-    private function user_agent()
+    protected function user_agent()
     {
         return "Drip API PHP Wrapper (getdrip.com). Version " . self::VERSION;
     }
@@ -299,7 +299,7 @@ class Client
      * @param int $code
      * @return boolean
      */
-    private function is_success_response($code)
+    protected function is_success_response($code)
     {
         return $code >= 200 && $code <= 299;
     }
@@ -312,7 +312,7 @@ class Client
      * @return \Drip\ResponseInterface
      * @throws Exception
      */
-    private function make_request($url, $params = array(), $req_method = self::GET)
+    protected function make_request($url, $params = array(), $req_method = self::GET)
     {
         if ($this->guzzle_stack_constructor) {
             // This can be replaced with `($this->guzzle_stack_constructor)()` once we drop PHP5 support.

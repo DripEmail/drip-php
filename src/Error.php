@@ -8,9 +8,9 @@ namespace Drip;
 class Error
 {
     /** @var string */
-    private $code;
+    protected $code;
     /** @var string */
-    private $message;
+    protected $message;
 
     /**
      * @param string $code      Coded error reason
