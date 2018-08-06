@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 1.0.0
 
+*This version breaks backwards compatibility, as per semver.*
+
 - Set up composer package
 - Make PSR-4 compatible
 - Move to namespace `\Drip\Client`
