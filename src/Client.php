@@ -337,6 +337,7 @@ class Client
                 'Accept' => 'application/json, text/javascript, */*; q=0.01',
                 'Content-Type' => 'application/vnd.api+json',
             ],
+            'http_errors' => false,
         ];
 
         switch ($req_method) {
