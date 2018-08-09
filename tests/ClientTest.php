@@ -29,6 +29,22 @@ final class ClientTest extends TestCase
         new \Drip\Client("abc123", "");
     }
 
+    public function testErrorResponseReturned()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            // default client request option "http_errors" will throw
+            // GuzzleHttp\Exception\ClientException but we set it false so
+            // no exception is thrown.
+            new Response(401, [], '{"error":"hello"}'),
+            new Response(502, [], 'timeout'),
+        ]);
+        $response401 = $client->fetch_campaign(['campaign_id' => 1]);
+        $this->assertFalse($response401->is_success());
+        $response502 = $client->fetch_campaign(['campaign_id' => 1]);
+        $this->assertFalse($response502->is_success());
+    }
+
     ////////////////////////// C A M P A I G N S //////////////////////////
 
     // #get_campaigns
