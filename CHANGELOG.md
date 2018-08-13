@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-* [#20](https://github.com/DripEmail/drip-php/pull/20) - Return error response instead of throwing exception. (@joeldodge79)
 * Your improvement here!
+
+## 1.2.0
+
+* [#20](https://github.com/DripEmail/drip-php/pull/20) - Return error response instead of throwing exception. (@joeldodge79)
 
 ## 1.1.0
 
