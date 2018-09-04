@@ -146,6 +146,21 @@ class Client
             self::POST
         );
     }
+    
+    /**
+     * Sends a batch request (up to 1000) of items
+     *
+     * @param array $params
+     * @return \Drip\ResponseInterface
+     */
+    public function batch_request($type, $params)
+    {
+        return $this->make_request(
+            "$this->account_id/$type/batches",
+            $params,
+            self::POST
+        );
+    }
 
     /**
      * Returns info regarding a particular subscriber
