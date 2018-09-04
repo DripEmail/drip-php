@@ -170,6 +170,17 @@ class Client
         return $this->make_request("$this->account_id/subscribers/$subscriber_id");
     }
 
+     /**
+     * Returns a list of subscribers
+     *
+     * @return \Drip\ResponseInterface
+     */
+    public function fetch_subscribers()
+    {
+
+        return $this->make_request("$this->account_id/subscribers");
+    }
+
     /**
      * Subscribes a user to a given campaign for a given account.
      *
