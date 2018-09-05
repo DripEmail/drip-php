@@ -234,6 +234,24 @@ final class ClientTest extends TestCase
         $response = $client->fetch_subscriber([]);
     }
 
+    // #fetch_subscribers
+
+    public function testFetchSubscribers()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            new Response(200, [], '{"blah":"hello"}'),
+        ]);
+        $response = $client->fetch_subscribers();
+        $this->assertTrue($response->is_success());
+        $this->assertEquals('hello', $response->get_contents()['blah']);
+
+        $this->assertCount(1, $mocked_requests);
+        $req = $mocked_requests[0]['request'];
+        $this->assertEquals('http://api.example.com/v9001/12345/subscribers', $req->getUri());
+        $this->assertEquals('GET', $req->getMethod());
+    }
+
     // #subscribe_subscriber
 
     public function testSubscribeSubscriberBaseCase()
