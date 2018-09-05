@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+* [#22](https://github.com/DripEmail/drip-php/pull/22) - Add `#fetch_subscribers` method. (@mticciati)
 * Your improvement here!
 
 ## 1.2.0
