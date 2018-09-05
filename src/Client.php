@@ -170,7 +170,7 @@ class Client
         return $this->make_request("$this->account_id/subscribers/$subscriber_id");
     }
 
-     /**
+    /**
      * Returns a list of subscribers
      *
      * @return \Drip\ResponseInterface
