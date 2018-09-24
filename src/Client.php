@@ -177,7 +177,7 @@ class Client
      *                          - optional
      * @return \Drip\ResponseInterface
      */
-    public function fetch_subscribers($params=null)
+    public function fetch_subscribers($params = null)
     {
 
         return $this->make_request("$this->account_id/subscribers", $params);
