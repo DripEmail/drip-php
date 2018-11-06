@@ -234,6 +234,21 @@ class Client
     }
 
     /**
+     * Sends a request to add/update a batch (up to 1000) of subscribers
+     *
+     * @param array $params
+     * @return \Drip\ResponseInterface
+     */
+    public function unsubscribe_subscribers($params)
+    {
+        return $this->make_request(
+            "$this->account_id/unsubscribes/batches",
+            $params,
+            self::POST
+        );
+    }
+
+    /**
      *
      * This calls POST /:account_id/tags to add the tag. It just returns some status code no content
      *
