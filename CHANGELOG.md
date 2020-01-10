@@ -6,9 +6,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+* [#22](https://github.com/DripEmail/drip-php/pull/22) - Add `#fetch_subscribers` method. (@mticciati)
 * Your improvement here!
 
+## 1.2.0
+
+* [#20](https://github.com/DripEmail/drip-php/pull/20) - Return error response instead of throwing exception. (@joeldodge79)
+
+## 1.1.0
+
+* [#15](https://github.com/DripEmail/drip-php/pull/15) - Added `\Drip\Client#create_or_update_subscribers` method (@j831)
+* [#17](https://github.com/DripEmail/drip-php/pull/17) - Make private methods protected so that people can subclass
+
 ## 1.0.0
+
+*This version breaks backwards compatibility, as per semver.*
 
 - Set up composer package
 - Make PSR-4 compatible

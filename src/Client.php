@@ -14,21 +14,21 @@ use Exception;
  */
 class Client
 {
-    const VERSION = '1.0.0';
+    const VERSION = '1.2.0';
 
     /** @var string */
-    private $api_token = '';
+    protected $api_token = '';
     /** @var string */
-    private $account_id = '';
+    protected $account_id = '';
     /** @var string */
-    private $api_end_point = 'https://api.getdrip.com/v2/';
+    protected $api_end_point = 'https://api.getdrip.com/v2/';
     /** @var integer */
-    private $timeout = 30;
+    protected $timeout = 30;
     /** @var integer */
-    private $connect_timeout = 30;
+    protected $connect_timeout = 30;
 
     /** @var callable */
-    private $guzzle_stack_constructor;
+    protected $guzzle_stack_constructor;
 
     const GET    = "GET";
     const POST   = "POST";
@@ -138,6 +138,21 @@ class Client
     }
 
     /**
+     * Sends a request to add/update a batch (up to 1000) of subscribers
+     *
+     * @param array $params
+     * @return \Drip\ResponseInterface
+     */
+    public function create_or_update_subscribers($params)
+    {
+        return $this->make_request(
+            "$this->account_id/subscribers/batches",
+            $params,
+            self::POST
+        );
+    }
+
+    /**
      * Returns info regarding a particular subscriber
      *
      * @param array $params
@@ -160,6 +175,17 @@ class Client
         $subscriber_id = urlencode($subscriber_id);
 
         return $this->make_request("$this->account_id/subscribers/$subscriber_id");
+    }
+
+    /**
+     * Returns a list of subscribers
+     *
+     * @return \Drip\ResponseInterface
+     */
+    public function fetch_subscribers()
+    {
+
+        return $this->make_request("$this->account_id/subscribers");
     }
 
     /**
@@ -292,7 +318,7 @@ class Client
     /**
      * @return string
      */
-    private function user_agent()
+    protected function user_agent()
     {
         return "Drip API PHP Wrapper (getdrip.com). Version " . self::VERSION;
     }
@@ -303,7 +329,7 @@ class Client
      * @param int $code
      * @return boolean
      */
-    private function is_success_response($code)
+    protected function is_success_response($code)
     {
         return $code >= 200 && $code <= 299;
     }
@@ -342,6 +368,7 @@ class Client
                 'Accept' => 'application/json, text/javascript, */*; q=0.01',
                 'Content-Type' => 'application/vnd.api+json',
             ],
+            'http_errors' => false,
         ];
 
         switch ($req_method) {

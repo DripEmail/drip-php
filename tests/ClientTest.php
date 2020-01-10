@@ -29,6 +29,22 @@ final class ClientTest extends TestCase
         new \Drip\Client("abc123", "");
     }
 
+    public function testErrorResponseReturned()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            // default client request option "http_errors" will throw
+            // GuzzleHttp\Exception\ClientException but we set it false so
+            // no exception is thrown.
+            new Response(401, [], '{"error":"hello"}'),
+            new Response(502, [], 'timeout'),
+        ]);
+        $response401 = $client->fetch_campaign(['campaign_id' => 1]);
+        $this->assertFalse($response401->is_success());
+        $response502 = $client->fetch_campaign(['campaign_id' => 1]);
+        $this->assertFalse($response502->is_success());
+    }
+
     ////////////////////////// C A M P A I G N S //////////////////////////
 
     // #get_campaigns
@@ -155,6 +171,25 @@ final class ClientTest extends TestCase
         $this->assertEquals('{"subscribers":[{"blahparam":"blahvalue"}]}', (string) $req->getBody());
     }
 
+    // #create_or_update_subscribers
+
+    public function testCreateOrUpdateSubscribersBaseCase()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            new Response(200, [], '{"blah":"hello"}'),
+        ]);
+        $response = $client->create_or_update_subscribers(['batches' => [['subscribers' => [['blah1' => 'blah111'],['blah2' => 'blah222']]]]]);
+        $this->assertTrue($response->is_success());
+        $this->assertEquals('hello', $response->get_contents()['blah']);
+
+        $this->assertCount(1, $mocked_requests);
+        $req = $mocked_requests[0]['request'];
+        $this->assertEquals('http://api.example.com/v9001/12345/subscribers/batches', $req->getUri());
+        $this->assertEquals('POST', $req->getMethod());
+        $this->assertEquals('{"batches":[{"subscribers":[{"blah1":"blah111"},{"blah2":"blah222"}]}]}', (string) $req->getBody());
+    }
+
     // #fetch_subscriber
 
     public function testFetchSubscriberById()
@@ -197,6 +232,24 @@ final class ClientTest extends TestCase
         ]);
         $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $response = $client->fetch_subscriber([]);
+    }
+
+    // #fetch_subscribers
+
+    public function testFetchSubscribers()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            new Response(200, [], '{"blah":"hello"}'),
+        ]);
+        $response = $client->fetch_subscribers();
+        $this->assertTrue($response->is_success());
+        $this->assertEquals('hello', $response->get_contents()['blah']);
+
+        $this->assertCount(1, $mocked_requests);
+        $req = $mocked_requests[0]['request'];
+        $this->assertEquals('http://api.example.com/v9001/12345/subscribers', $req->getUri());
+        $this->assertEquals('GET', $req->getMethod());
     }
 
     // #subscribe_subscriber
