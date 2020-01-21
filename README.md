@@ -24,7 +24,7 @@ setting:
 $client = new \Drip\Client("YOUR_ACCESS_TOKEN", "YOUR_ACCOUNT_ID");
 ```
 
-Your account ID can be found [here](https://www.getdrip.com/settings/site).
+Your account ID can be found [here](https://www.getdrip.com/settings).
 Most API actions require an account ID, with the exception of methods like
 the "list accounts" endpoint.
 
