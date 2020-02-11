@@ -2,29 +2,59 @@
 
 namespace DripTests;
 
+use Drip\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Exception\RequestException;
 
-class GuzzleHelpers
+class GuzzleHelpers extends Client
 {
+    /** @var MockHandler $mock */
+    public $mock;
+
+    public $history = array();
+
     /**
      * Helper for mocking the client
      *
      * @param array $history_object
      * @param \GuzzleHttp\Psr7\Response[] $responses
-     * @return \Drip\Client
      */
-    public static function mocked_client(&$history_object, $responses)
+    public function __construct()
     {
-        return new \Drip\Client("abc123", 12345, [
+        $this->mock = new MockHandler();
+        $stack = HandlerStack::create($this->mock);
+        $stack->push(\GuzzleHttp\Middleware::history($this->history));
+
+
+        parent::__construct("abc123", 12345, [
             'api_end_point' => 'http://api.example.com/v9001/',
-            'guzzle_stack_constructor' => function () use (&$history_object, $responses) {
-                $mock = new MockHandler($responses);
-                $stack = \GuzzleHttp\HandlerStack::create($mock);
-                $stack->push(\GuzzleHttp\Middleware::history($history_object));
+            'guzzle_stack_constructor' => function () use ($stack) {
                 return $stack;
             }
         ]);
+    }
+
+    /**
+     * @return \Psr\Http\Message\UriInterface
+     */
+    public function getLastUri()
+    {
+        return $this->mock->getLastRequest()->getUri();
+    }
+
+    /**
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    public function getLastRequest()
+    {
+        return $this->mock->getLastRequest();
+    }
+
+    /**
+     * @param $a
+     */
+    public function append($a)
+    {
+        $this->mock->append($a);
     }
 }
