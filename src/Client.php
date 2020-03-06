@@ -14,6 +14,7 @@ use Drip\Resources\Conversion;
 use Drip\Resources\CustomFields;
 use Drip\Resources\Event;
 use Drip\Resources\Form;
+use Drip\Resources\Order;
 use Drip\Resources\Subscriber;
 use Drip\Resources\Tag;
 use Drip\Resources\User;
@@ -28,7 +29,7 @@ use Respect\Validation\Validator as v;
  */
 class Client implements DripAPIInterface
 {
-    use UnwrapParam, Account, Broadcast, Campaign, CustomFields, Conversion, Subscriber, Event, Form, Tag, User;
+    use UnwrapParam, Account, Broadcast, Campaign, CustomFields, Conversion, Subscriber, Event, Form, Tag, User, Order;
 
     /** @var string */
     protected static $api_token = '';
