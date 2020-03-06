@@ -1,6 +1,6 @@
 <?php
 
-namespace DripTests;
+namespace DripTests\support;
 
 use Drip\Client;
 use GuzzleHttp\Handler\MockHandler;

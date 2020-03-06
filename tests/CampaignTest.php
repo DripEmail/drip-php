@@ -2,9 +2,8 @@
 
 namespace DripTests;
 
+use DripTests\support\DripClientTestBase;
 use GuzzleHttp\Psr7\Response;
-
-require_once 'support\DripClientTestBase.php';
 
 class CampaignTest extends DripClientTestBase
 {

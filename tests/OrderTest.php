@@ -2,14 +2,11 @@
 
 namespace DripTests;
 
+use DripTests\support\DripClientTestBase;
 use GuzzleHttp\Psr7\Response;
-
-require_once 'support\DripClientTestBase.php';
-
 
 class OrderTest extends DripClientTestBase
 {
-
     private $order = [
         'provider' => 'my_custom_platform',
         'email' => 'user@gmail.com',

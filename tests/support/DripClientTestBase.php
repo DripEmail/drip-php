@@ -1,15 +1,14 @@
 <?php
 
-namespace DripTests;
+namespace DripTests\support;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 
-require_once 'GuzzleHelpers.php';
 
 class DripClientTestBase extends TestCase
 {
-    /** @var \DripTests\GuzzleHelpers $client */
+    /** @var GuzzleHelpers $client */
     protected $client;
 
     protected function setUp()

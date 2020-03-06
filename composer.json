@@ -4,7 +4,10 @@
   "homepage": "https://github.com/DripEmail/drip-php",
   "license": "MIT",
   "autoload": {
-    "psr-4": { "Drip\\": "src" }
+    "psr-4": {
+      "Drip\\": "src",
+      "DripTests\\": "tests"
+    }
   },
   "require-dev": {
     "phpunit/phpunit": "^5",
