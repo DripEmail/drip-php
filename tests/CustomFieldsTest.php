@@ -12,7 +12,7 @@ class CustomFieldsTest extends DripClientTestBase
     public function testGetCustomFieldsBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::get_custom_fields();
+        $response = $this->client->get_custom_fields();
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);

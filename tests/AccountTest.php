@@ -13,7 +13,7 @@ class AccountTest extends DripClientTestBase
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
 
-        $response = $this->client::get_accounts();
+        $response = $this->client->get_accounts();
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);
         $this->assertRequest('http://api.example.com/v9001/accounts');
@@ -23,7 +23,7 @@ class AccountTest extends DripClientTestBase
     public function testFetchAccountBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::fetch_account(['account_id' => '1234']);
+        $response = $this->client->fetch_account(['account_id' => '1234']);
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);
@@ -33,7 +33,7 @@ class AccountTest extends DripClientTestBase
     public function testFetchAccountWithAccountIDBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::fetch_account(1234);
+        $response = $this->client->fetch_account(1234);
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);
@@ -44,6 +44,6 @@ class AccountTest extends DripClientTestBase
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
         $this->expectException(\Drip\Exception\InvalidArgumentException::class);
-        $this->client::fetch_account([]);
+        $this->client->fetch_account([]);
     }
 }

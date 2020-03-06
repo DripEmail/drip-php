@@ -12,7 +12,7 @@ class ConversionTest extends DripClientTestBase
     public function testGetConversionsBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::get_conversions();
+        $response = $this->client->get_conversions();
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);
@@ -22,7 +22,7 @@ class ConversionTest extends DripClientTestBase
     public function testFetchConversionBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::fetch_conversion(['conversion_id' => '6789']);
+        $response = $this->client->fetch_conversion(['conversion_id' => '6789']);
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);

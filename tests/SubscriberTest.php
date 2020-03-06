@@ -231,7 +231,7 @@ class SubscriberTest extends DripClientTestBase
     public function testCampaignSubscriptionsBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::campaign_subscriptions('9876');
+        $response = $this->client->campaign_subscriptions('9876');
         $this->assertRequest('http://api.example.com/v9001/12345/subscribers/9876/campaign_subscriptions');
     }
 }

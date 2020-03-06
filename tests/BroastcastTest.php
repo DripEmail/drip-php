@@ -12,7 +12,7 @@ class BroastcastTest extends DripClientTestBase
     public function testGetBroastcastsBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::get_broadcasts();
+        $response = $this->client->get_broadcasts();
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);
@@ -22,7 +22,7 @@ class BroastcastTest extends DripClientTestBase
     public function testGetBroastcastsWithParams()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::get_broadcasts(['status' => 'all', 'direction' => 'desc', 'sort' => 'created_at']);
+        $response = $this->client->get_broadcasts(['status' => 'all', 'direction' => 'desc', 'sort' => 'created_at']);
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);
@@ -32,7 +32,7 @@ class BroastcastTest extends DripClientTestBase
     public function testFetchBroastcastsBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::fetch_broadcast(['broadcast_id' => '1234']);
+        $response = $this->client->fetch_broadcast(['broadcast_id' => '1234']);
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);

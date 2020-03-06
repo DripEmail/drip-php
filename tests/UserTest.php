@@ -12,7 +12,7 @@ class UserTest extends DripClientTestBase
     public function testGetUsersBaseCase()
     {
         $this->client->append(new Response(200, [], '{"blah":"hello"}'));
-        $response = $this->client::fetch_user();
+        $response = $this->client->fetch_user();
 
         $this->assertTrue($response->is_success());
         $this->assertEquals('hello', $response->get_contents()['blah']);
