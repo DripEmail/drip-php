@@ -13,6 +13,6 @@
   "require": {
     "guzzlehttp/guzzle": "^6.3",
     "respect/validation": "^1.1",
-    "ext-json": "^1.7"
+    "ext-json": "^1"
   }
 }
