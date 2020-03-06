@@ -43,5 +43,4 @@ final class ClientTest extends DripClientTestBase
         $response502 = $this->client->fetch_campaign(['campaign_id' => 1]);
         $this->assertFalse($response502->is_success());
     }
-
 }

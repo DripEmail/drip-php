@@ -16,5 +16,4 @@ class UserTest extends DripClientTestBase
         $this->assertEquals('hello', $response->get_contents()['blah']);
         $this->assertRequest('http://api.example.com/v9001/user');
     }
-
 }

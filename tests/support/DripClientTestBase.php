@@ -5,7 +5,6 @@ namespace DripTests\support;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 
-
 class DripClientTestBase extends TestCase
 {
     /** @var GuzzleHelpers $client */
@@ -42,5 +41,4 @@ class DripClientTestBase extends TestCase
             }
         }
     }
-
 }

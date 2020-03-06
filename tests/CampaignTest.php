@@ -103,6 +103,5 @@ class CampaignTest extends DripClientTestBase
     public function testCampaign_subscribersBaseCase()
     {
         $mocked_requests = [];
-
     }
 }

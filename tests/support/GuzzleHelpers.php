@@ -11,6 +11,7 @@ class GuzzleHelpers extends Client
     /** @var MockHandler $mock */
     public $mock;
 
+    /** @var array $history */
     public $history = array();
 
     /**

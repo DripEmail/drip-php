@@ -2,6 +2,7 @@
 
 
 namespace Drip;
+
 use Drip\Exception\InvalidArgumentException;
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator as v;

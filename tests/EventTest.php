@@ -46,5 +46,4 @@ class EventTest extends DripClientTestBase
         $this->expectException(\Drip\Exception\InvalidArgumentException::class);
         $this->client->record_event([]);
     }
-
 }

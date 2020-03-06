@@ -36,7 +36,8 @@ trait Tag
             v::keySet(
                 v::key('email', v::stringType(), true),
                 v::key('tag', v::stringType(), true)
-            ));
+            )
+        );
         // The API wants the params to be JSON encoded
         $req_params = array('tags' => array($params));
 
@@ -59,12 +60,12 @@ trait Tag
             v::keySet(
                 v::key('email', v::stringType(), true),
                 v::key('tag', v::stringType(), true)
-            ));
+            )
+        );
 
         // The API wants the params to be JSON encoded
         $req_params = array('tags' => array($params));
 
         return self::make_request(self::$account_id . "/tags", $req_params, self::DELETE, $v);
     }
-
 }

@@ -96,6 +96,4 @@ trait Campaign
 
         return self::make_request(self::$account_id . "/campaigns/$campaign_id/subscribers", $params, self::GET, $v);
     }
-
-
 }

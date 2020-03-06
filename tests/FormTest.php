@@ -26,5 +26,4 @@ class FormTest extends DripClientTestBase
         $this->assertEquals('hello', $response->get_contents()['blah']);
         $this->assertRequest('http://api.example.com/v9001/12345/forms/1234');
     }
-
 }

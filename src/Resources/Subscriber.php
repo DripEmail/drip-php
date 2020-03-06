@@ -225,5 +225,4 @@ trait Subscriber
         $subscriber_id = urlencode($subscriber_id);
         return self::make_request(self::$account_id."/subscribers/$subscriber_id/unsubscribe", $params, self::POST);
     }
-
 }

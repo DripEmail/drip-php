@@ -33,5 +33,4 @@ trait Account
 
         return self::make_request("accounts/$account_id", $params);
     }
-
 }

@@ -4,7 +4,6 @@ namespace Drip\Resources;
 use Drip\Exception\InvalidArgumentException;
 use GuzzleHttp\Exception\GuzzleException;
 
-
 trait CustomFields
 {
     /**

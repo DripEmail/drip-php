@@ -231,5 +231,4 @@ class Client implements DripAPIInterface
         }
         // TODO: allow setting timeouts
     }
-
 }

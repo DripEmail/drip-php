@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Response;
 
 class OrderTest extends DripClientTestBase
 {
+    /** @var array $order */
     private $order = [
         'provider' => 'my_custom_platform',
         'email' => 'user@gmail.com',
@@ -93,6 +94,4 @@ class OrderTest extends DripClientTestBase
         $expectedBody = json_encode(['orders' => [$this->order, $this->order]]);
         $this->assertRequest('https://api.getdrip.com/v3/12345/shopper_activity/order/batch', 'POST', $expectedBody);
     }
-
-
 }

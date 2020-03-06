@@ -36,5 +36,4 @@ class BroastcastTest extends DripClientTestBase
         $this->assertEquals('hello', $response->get_contents()['blah']);
         $this->assertRequest('http://api.example.com/v9001/12345/broadcasts/1234');
     }
-
 }
