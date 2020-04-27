@@ -171,6 +171,29 @@ class Client
     }
 
     /**
+     * Returns info regarding a particular subscriber subscriptions to campaigns
+     *
+     * @param array $params
+     * @return \Drip\ResponseInterface
+     */
+    public function fetch_subscriber_campaigns($params)
+    {
+        if (!empty($params['subscriber_id'])) {
+            $subscriber_id = $params['subscriber_id'];
+            unset($params['subscriber_id']); // clear it from the params
+        } else if (!empty($params['email'])) {
+            $subscriber_id = $params['email'];
+            unset($params['email']); // clear it from the params
+        } else {
+            throw new InvalidArgumentException("Subscriber ID or Email was not specified. You must specify either Subscriber ID or Email.");
+        }
+
+        $subscriber_id = urlencode($subscriber_id);
+
+        return $this->make_request("$this->account_id/subscribers/$subscriber_id/campaign_subscriptions");
+    }
+
+    /**
      * Returns a list of subscribers
      *
      * @return \Drip\ResponseInterface
