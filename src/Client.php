@@ -255,12 +255,12 @@ class Client
     }
 
     /**
-    *
-    * This calls DELETE /:account_id/subscribers/:id_or_email to delete a subscriber.
-    *
-    * @param array $params
-    * @param bool $status success or failure
-    */
+     *
+     * This calls DELETE /:account_id/subscribers/:id_or_email to delete a subscriber.
+     *
+     * @param array $params
+     * @param bool $status success or failure
+     */
     public function delete_subscriber($params)
     {
         if (!empty($params['subscriber_id'])) {
