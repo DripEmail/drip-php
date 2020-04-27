@@ -234,6 +234,50 @@ final class ClientTest extends TestCase
         $response = $client->fetch_subscriber([]);
     }
 
+    // #fetch_subscriber_campaigns
+
+    public function testFetchSubscriberCampaignsById()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            new Response(200, [], '{"blah":"hello"}'),
+        ]);
+        $response = $client->fetch_subscriber_campaigns(['subscriber_id' => '1234']);
+        $this->assertTrue($response->is_success());
+        $this->assertEquals('hello', $response->get_contents()['blah']);
+
+        $this->assertCount(1, $mocked_requests);
+        $req = $mocked_requests[0]['request'];
+        $this->assertEquals('http://api.example.com/v9001/12345/subscribers/1234/campaign_subscriptions', $req->getUri());
+        $this->assertEquals('GET', $req->getMethod());
+    }
+
+    public function testFetchSubscriberCampaignsByEmail()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            new Response(200, [], '{"blah":"hello"}'),
+        ]);
+        $response = $client->fetch_subscriber_campaigns(['email' => 'test@example.com']);
+        $this->assertTrue($response->is_success());
+        $this->assertEquals('hello', $response->get_contents()['blah']);
+
+        $this->assertCount(1, $mocked_requests);
+        $req = $mocked_requests[0]['request'];
+        $this->assertEquals('http://api.example.com/v9001/12345/subscribers/test%40example.com/campaign_subscriptions', $req->getUri());
+        $this->assertEquals('GET', $req->getMethod());
+    }
+
+    public function testFetchSubscriberCampaignsWithNeitherEmailNorId()
+    {
+        $mocked_requests = [];
+        $client = GuzzleHelpers::mocked_client($mocked_requests, [
+            new Response(200, [], '{"blah":"hello"}'),
+        ]);
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
+        $response = $client->fetch_subscriber_campaigns([]);
+    }
+
     // #fetch_subscribers
 
     public function testFetchSubscribers()
