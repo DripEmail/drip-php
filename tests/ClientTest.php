@@ -19,13 +19,13 @@ final class ClientTest extends TestCase
 
     public function testInitializedWithAccessToken()
     {
-        $client = new \Drip\Client(array("account_id" => "1234", "access_token" => "abc123"));
+        $client = new \Drip\Client(["account_id" => "1234", "access_token" => "abc123"]);
         $this->assertInstanceOf(\Drip\Client::class, $client);
     }
 
     public function testInitializedWithApiKey()
     {
-        $client = new \Drip\Client(array("account_id" => "1234", "api_key" => "abc123"));
+        $client = new \Drip\Client(["account_id" => "1234", "api_key" => "abc123"]);
         $this->assertInstanceOf(\Drip\Client::class, $client);
     }
 
@@ -38,13 +38,13 @@ final class ClientTest extends TestCase
     public function testInvalidApiKey()
     {
         $this->expectException(\Drip\Exception\InvalidApiKeyException::class);
-        new \Drip\Client(array("account_id" => "1234", "api_key" => ""));
+        new \Drip\Client(["account_id" => "1234", "api_key" => ""]);
     }
 
     public function testInvalidAccessToken()
     {
         $this->expectException(\Drip\Exception\InvalidAccessTokenException::class);
-        new \Drip\Client(array("account_id" => "1234", "access_token" => ""));
+        new \Drip\Client(["account_id" => "1234", "access_token" => ""]);
     }
 
     public function testDeprecatedInvalidAccountId()
@@ -56,7 +56,7 @@ final class ClientTest extends TestCase
     public function testInvalidAccountId()
     {
         $this->expectException(\Drip\Exception\InvalidAccountIdException::class);
-        new \Drip\Client(array("account_id" => "", "api_key" => "abc123"));
+        new \Drip\Client(["account_id" => "", "api_key" => "abc123"]);
     }
 
     public function testErrorResponseReturned()
