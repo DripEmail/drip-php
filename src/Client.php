@@ -49,7 +49,6 @@ class Client
      *               * `account_id` e.g. "123456"
      *               * `api_end_point` (mostly for Drip internal testing)
      *               * `guzzle_stack_constructor` (for test suite, may break at any time, do not use)
-     * 
      * @throws Exception
      */
     public function __construct(...$params)
@@ -78,6 +77,16 @@ class Client
         }
     }
 
+    /**
+     * Accepts API key and stores it internally -- format to be deprecated.
+     * 
+     * @param string $api_token
+     * @param string $account_id
+     * @param array  $options
+     *               * `api_end_point` (for test suite)
+     *               * `guzzle_stack_constructor` (for test suite)
+     * @throws Exception
+     */
     protected function deprecated_constructor($api_key, $account_id, $options = []) 
     {
         $account_id = trim($account_id);
@@ -98,6 +107,10 @@ class Client
         // TODO: allow setting timeouts
     }
 
+    /**
+     * @param string $api_key
+     * @throws Exception
+     */
     protected function basic_auth_setup($api_key) 
     {
         $api_key = trim($api_key);
@@ -107,6 +120,10 @@ class Client
         $this->api_key = $api_key;
     }
 
+    /**
+     * @param string $access_token
+     * @throws Exception
+     */
     protected function bearer_auth_setup($access_token) 
     {
         $access_token = trim($access_token);
