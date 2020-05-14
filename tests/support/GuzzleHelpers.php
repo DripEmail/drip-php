@@ -17,7 +17,9 @@ class GuzzleHelpers
      */
     public static function mocked_client(&$history_object, $responses)
     {
-        return new \Drip\Client("abc123", 12345, [
+        return new \Drip\Client([
+            'account_id' => '12345',
+            'api_key' => 'abc123',
             'api_end_point' => 'http://api.example.com/v9001/',
             'guzzle_stack_constructor' => function () use (&$history_object, $responses) {
                 $mock = new MockHandler($responses);

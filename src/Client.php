@@ -4,7 +4,8 @@ namespace Drip;
 
 use Drip\Exception\DripException;
 use Drip\Exception\InvalidArgumentException;
-use Drip\Exception\InvalidApiTokenException;
+use Drip\Exception\InvalidApiKeyException;
+use Drip\Exception\InvalidAccessTokenException;
 use Drip\Exception\InvalidAccountIdException;
 use Drip\Exception\UnexpectedHttpVerbException;
 
@@ -17,7 +18,11 @@ class Client
     const VERSION = '1.3.0';
 
     /** @var string */
-    protected $api_token = '';
+    protected $api_key = '';
+    /** @var string */
+    protected $access_token = '';
+    /** @var boolean */
+    protected $bearer_auth = false;
     /** @var string */
     protected $account_id = '';
     /** @var string */
@@ -36,38 +41,81 @@ class Client
     const PUT    = "PUT";
 
     /**
-     * Accepts the token and saves it internally.
+     * Accepts API key or access token and saves it internally.
      *
-     * @param string $api_token e.g. qsor48ughrjufyu2dadraasfa1212424
-     * @param string $account_id e.g. 123456
-     * @param array  $options
+     * @param array  $params
+     *               * `api_key` e.g. "qsor48ughrjufyu2dadraasfa1212424"
+     *               * `access_token` e.g. "daar48ughrjufyu2dadraasfa421121"
+     *               * `account_id` e.g. "123456"
      *               * `api_end_point` (mostly for Drip internal testing)
      *               * `guzzle_stack_constructor` (for test suite, may break at any time, do not use)
+     * 
      * @throws Exception
      */
-    public function __construct($api_token, $account_id, $options = [])
+    public function __construct(...$params)
     {
-        if (\array_key_exists('api_end_point', $options)) {
+        if (gettype($params[0]) === 'string') {
+            $this->deprecated_constructor($params[0], $params[1], $params[2]);
+        } else {
+            $account_id = trim($params[0]['account_id']);
+            if (array_key_exists('access_token', $params[0])) {
+                $this->bearer_auth_setup($params[0]['access_token']);
+            } else {
+                $this->basic_auth_setup($params[0]['api_key']);
+            }
+
+            if (array_key_exists('api_end_point', $params[0])) {
+                $this->api_end_point = $params[0]['api_end_point'];
+            }
+            if (array_key_exists('guzzle_stack_constructor', $params[0])) {
+                $this->guzzle_stack_constructor = $params[0]['guzzle_stack_constructor'];
+            }
+
+            if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
+                throw new InvalidAccountIdException("Missing or invalid Drip account ID.");
+            }
+            $this->account_id = $account_id;
+        }
+    }
+
+    protected function deprecated_constructor($api_key, $account_id, $options = []) 
+    {
+        $account_id = trim($account_id);
+        $this->basic_auth_setup($api_key);
+
+        if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
+            throw new InvalidAccountIdException("Missing or invalid Drip account ID.");
+        }
+        $this->account_id = $account_id;
+
+        if (is_array($options) && array_key_exists('api_end_point', $options)) {
             $this->api_end_point = $options['api_end_point'];
         }
         // NOTE: For testing. Could break at any time, please do not depend on this.
-        if (\array_key_exists('guzzle_stack_constructor', $options)) {
+        if (is_array($options) && array_key_exists('guzzle_stack_constructor', $options)) {
             $this->guzzle_stack_constructor = $options['guzzle_stack_constructor'];
         }
         // TODO: allow setting timeouts
+    }
 
-        $api_token = trim($api_token);
-        if (empty($api_token) || !preg_match('#^[\w-]+$#si', $api_token)) {
-            throw new InvalidApiTokenException("Missing or invalid Drip API token.");
+    protected function basic_auth_setup($api_key) 
+    {
+        $api_key = trim($api_key);
+        if (empty($api_key) || !preg_match('#^[\w-]+$#si', $api_key)) {
+            throw new InvalidApiKeyException("Missing or invalid Drip API key.");
         }
-        $this->api_token = $api_token;
+        $this->api_key = $api_key;
+    }
 
-
-        $account_id = trim($account_id);
-        if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
-            throw new InvalidAccountIdException("Missing or invalid Drip API token.");
+    protected function bearer_auth_setup($access_token) 
+    {
+        $access_token = trim($access_token);
+        if (empty($access_token) || !preg_match('#^[\w-]+$#si', $access_token)) {
+            throw new InvalidAccessTokenException("Missing or invalid Drip access token.");
         }
-        $this->account_id = $account_id;
+        $this->access_token = $access_token;
+
+        $this->bearer_auth = true;
     }
 
     /**
@@ -386,17 +434,21 @@ class Client
         ]);
 
         $req_params = [
-            'auth' => [$this->api_token, ''],
+            'auth' => [$this->api_key, ''],
             'timeout' => $this->timeout,
             'connect_timeout' => $this->connect_timeout,
             'headers' => [
                 'User-Agent' => $this->user_agent(),
                 'Accept' => 'application/json, text/javascript, */*; q=0.01',
                 'Content-Type' => 'application/vnd.api+json',
-                'Authorization' => 'Bearer ' . $this->api_token,
             ],
             'http_errors' => false,
         ];
+
+        if ($this->bearer_auth) {
+            $req_params['headers']['Authorization'] = 'Bearer ' . $this->access_token;
+            unset($req_params['auth']);
+        }
 
         switch ($req_method) {
             case self::GET:
