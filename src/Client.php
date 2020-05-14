@@ -78,12 +78,12 @@ class Client
                 throw new InvalidAccountIdException("Missing or invalid Drip account ID.");
             }
             $this->account_id = $account_id;
-        }
+        }//end if
     }
 
     /**
      * Accepts API key and stores it internally -- format to be deprecated.
-     * 
+     *
      * @param string $api_token
      * @param string $account_id
      * @param array  $options
@@ -91,7 +91,7 @@ class Client
      *               * `guzzle_stack_constructor` (for test suite)
      * @throws Exception
      */
-    protected function deprecated_constructor($api_key, $account_id, $options = []) 
+    protected function deprecated_constructor($api_key, $account_id, $options = [])
     {
         $account_id = trim($account_id);
         $this->basic_auth_setup($api_key);
@@ -115,7 +115,7 @@ class Client
      * @param string $api_key
      * @throws Exception
      */
-    protected function basic_auth_setup($api_key) 
+    protected function basic_auth_setup($api_key)
     {
         $api_key = trim($api_key);
         if (empty($api_key) || !preg_match('#^[\w-]+$#si', $api_key)) {
@@ -128,7 +128,7 @@ class Client
      * @param string $access_token
      * @throws Exception
      */
-    protected function bearer_auth_setup($access_token) 
+    protected function bearer_auth_setup($access_token)
     {
         $access_token = trim($access_token);
         if (empty($access_token) || !preg_match('#^[\w-]+$#si', $access_token)) {
