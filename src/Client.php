@@ -54,7 +54,11 @@ class Client
     public function __construct(...$params)
     {
         if (gettype($params[0]) === 'string') {
-            $this->deprecated_constructor($params[0], $params[1], $params[2]);
+            if (isset($params[2])) {
+                $this->deprecated_constructor($params[0], $params[1], $params[2]);
+            } else {
+                $this->deprecated_constructor($params[0], $params[1]);
+            }
         } else {
             $account_id = trim($params[0]['account_id']);
             if (array_key_exists('access_token', $params[0])) {
@@ -97,11 +101,11 @@ class Client
         }
         $this->account_id = $account_id;
 
-        if (is_array($options) && array_key_exists('api_end_point', $options)) {
+        if (array_key_exists('api_end_point', $options)) {
             $this->api_end_point = $options['api_end_point'];
         }
         // NOTE: For testing. Could break at any time, please do not depend on this.
-        if (is_array($options) && array_key_exists('guzzle_stack_constructor', $options)) {
+        if (array_key_exists('guzzle_stack_constructor', $options)) {
             $this->guzzle_stack_constructor = $options['guzzle_stack_constructor'];
         }
         // TODO: allow setting timeouts
