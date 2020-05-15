@@ -4,7 +4,8 @@ namespace Drip;
 
 use Drip\Exception\DripException;
 use Drip\Exception\InvalidArgumentException;
-use Drip\Exception\InvalidApiTokenException;
+use Drip\Exception\InvalidApiKeyException;
+use Drip\Exception\InvalidAccessTokenException;
 use Drip\Exception\InvalidAccountIdException;
 use Drip\Exception\UnexpectedHttpVerbException;
 
@@ -17,7 +18,9 @@ class Client
     const VERSION = '1.3.0';
 
     /** @var string */
-    protected $api_token = '';
+    protected $api_key = '';
+    /** @var string */
+    protected $access_token = '';
     /** @var string */
     protected $account_id = '';
     /** @var string */
@@ -36,38 +39,108 @@ class Client
     const PUT    = "PUT";
 
     /**
-     * Accepts the token and saves it internally.
+     * Accepts API key or access token and saves it internally.
      *
-     * @param string $api_token e.g. qsor48ughrjufyu2dadraasfa1212424
-     * @param string $account_id e.g. 123456
-     * @param array  $options
+     * @param array  $params
+     *               * `api_key` e.g. "qsor48ughrjufyu2dadraasfa1212424"
+     *               * `access_token` e.g. "daar48ughrjufyu2dadraasfa421121"
+     *               * `account_id` e.g. "123456"
      *               * `api_end_point` (mostly for Drip internal testing)
      *               * `guzzle_stack_constructor` (for test suite, may break at any time, do not use)
      * @throws Exception
      */
-    public function __construct($api_token, $account_id, $options = [])
+    public function __construct(...$params)
     {
-        if (\array_key_exists('api_end_point', $options)) {
+        if (gettype($params[0]) === 'string') {
+            if (isset($params[2])) {
+                $this->deprecated_constructor($params[0], $params[1], $params[2]);
+            } else {
+                $this->deprecated_constructor($params[0], $params[1]);
+            }
+        } else {
+            if (array_key_exists('access_token', $params[0])) {
+                $this->bearer_auth_setup($params[0]['access_token']);
+            } else if (array_key_exists('api_key', $params[0])) {
+                $this->basic_auth_setup($params[0]['api_key']);
+            } else {
+                throw new InvalidArgumentException("Missing Drip API key or access token.");
+            }
+            $this->set_test_options($params[0]);
+            $this->set_account_id($params[0]['account_id']);
+        }//end if
+    }
+
+    /**
+     * Accepts API key and stores it internally -- format to be deprecated.
+     *
+     * @param string $api_token
+     * @param string $account_id
+     * @param array  $options
+     *               * `api_end_point` (for test suite)
+     *               * `guzzle_stack_constructor` (for test suite)
+     * @throws Exception
+     */
+    protected function deprecated_constructor($api_key, $account_id, $options = [])
+    {
+        $this->basic_auth_setup($api_key);
+        $this->set_account_id($account_id);
+        $this->set_test_options($options);
+    }
+
+    /**
+     * @param string $api_key
+     * @throws Exception
+     */
+    protected function basic_auth_setup($api_key)
+    {
+        $api_key = trim($api_key);
+        if (empty($api_key) || !preg_match('#^[\w-]+$#si', $api_key)) {
+            throw new InvalidApiKeyException("Missing or invalid Drip API key.");
+        }
+        $this->api_key = $api_key;
+    }
+
+    /**
+     * @param string $access_token
+     * @throws Exception
+     */
+    protected function bearer_auth_setup($access_token)
+    {
+        $access_token = trim($access_token);
+        if (empty($access_token) || !preg_match('#^[\w-]+$#si', $access_token)) {
+            throw new InvalidAccessTokenException("Missing or invalid Drip access token.");
+        }
+        $this->access_token = $access_token;
+    }
+
+    /**
+     * @param string $account_id
+     * @throws Exception
+     */
+    protected function set_account_id($account_id)
+    {
+        $account_id = trim($account_id);
+        if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
+            throw new InvalidAccountIdException("Missing or invalid Drip account ID.");
+        }
+        $this->account_id = $account_id;
+    }
+
+    /**
+     * @param array  $options
+     *               * `api_end_point`
+     *               * `guzzle_stack_constructor`
+     */
+    protected function set_test_options($options)
+    {
+        if (array_key_exists('api_end_point', $options)) {
             $this->api_end_point = $options['api_end_point'];
         }
         // NOTE: For testing. Could break at any time, please do not depend on this.
-        if (\array_key_exists('guzzle_stack_constructor', $options)) {
+        if (array_key_exists('guzzle_stack_constructor', $options)) {
             $this->guzzle_stack_constructor = $options['guzzle_stack_constructor'];
         }
         // TODO: allow setting timeouts
-
-        $api_token = trim($api_token);
-        if (empty($api_token) || !preg_match('#^[\w-]+$#si', $api_token)) {
-            throw new InvalidApiTokenException("Missing or invalid Drip API token.");
-        }
-        $this->api_token = $api_token;
-
-
-        $account_id = trim($account_id);
-        if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
-            throw new InvalidAccountIdException("Missing or invalid Drip API token.");
-        }
-        $this->account_id = $account_id;
     }
 
     /**
@@ -386,7 +459,6 @@ class Client
         ]);
 
         $req_params = [
-            'auth' => [$this->api_token, ''],
             'timeout' => $this->timeout,
             'connect_timeout' => $this->connect_timeout,
             'headers' => [
@@ -396,6 +468,12 @@ class Client
             ],
             'http_errors' => false,
         ];
+
+        if (!empty($this->api_key)) {
+            $req_params['auth'] = [$this->api_key, ''];
+        } else if (!empty($this->access_token)) {
+            $req_params['headers']['Authorization'] = 'Bearer ' . $this->access_token;
+        }
 
         switch ($req_method) {
             case self::GET:

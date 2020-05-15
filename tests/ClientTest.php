@@ -11,22 +11,58 @@ require_once 'GuzzleHelpers.php';
 
 final class ClientTest extends TestCase
 {
-    public function testInitializedWithApiToken()
+    public function testDeprecatedInitializedWithApiKey()
     {
         $client = new \Drip\Client("abc123", "1234");
         $this->assertInstanceOf(\Drip\Client::class, $client);
     }
 
-    public function testInvalidApiToken()
+    public function testInitializedWithAccessToken()
     {
-        $this->expectException(\Drip\Exception\InvalidApiTokenException::class);
+        $client = new \Drip\Client(["account_id" => "1234", "access_token" => "abc123"]);
+        $this->assertInstanceOf(\Drip\Client::class, $client);
+    }
+
+    public function testInitializedWithApiKey()
+    {
+        $client = new \Drip\Client(["account_id" => "1234", "api_key" => "abc123"]);
+        $this->assertInstanceOf(\Drip\Client::class, $client);
+    }
+
+    public function testDeprecatedInvalidApiKey()
+    {
+        $this->expectException(\Drip\Exception\InvalidApiKeyException::class);
         new \Drip\Client("", "1234");
+    }
+
+    public function testInvalidApiKey()
+    {
+        $this->expectException(\Drip\Exception\InvalidApiKeyException::class);
+        new \Drip\Client(["account_id" => "1234", "api_key" => ""]);
+    }
+
+    public function testInvalidAccessToken()
+    {
+        $this->expectException(\Drip\Exception\InvalidAccessTokenException::class);
+        new \Drip\Client(["account_id" => "1234", "access_token" => ""]);
+    }
+
+    public function testMissingCredentials()
+    {
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
+        new \Drip\Client(["account_id" => "1234"]);
+    }
+
+    public function testDeprecatedInvalidAccountId()
+    {
+        $this->expectException(\Drip\Exception\InvalidAccountIdException::class);
+        new \Drip\Client("abc123", "");
     }
 
     public function testInvalidAccountId()
     {
         $this->expectException(\Drip\Exception\InvalidAccountIdException::class);
-        new \Drip\Client("abc123", "");
+        new \Drip\Client(["account_id" => "", "api_key" => "abc123"]);
     }
 
     public function testErrorResponseReturned()
