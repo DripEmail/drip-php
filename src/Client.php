@@ -21,8 +21,6 @@ class Client
     protected $api_key = '';
     /** @var string */
     protected $access_token = '';
-    /** @var boolean */
-    protected $bearer_auth = false;
     /** @var string */
     protected $account_id = '';
     /** @var string */
@@ -111,8 +109,6 @@ class Client
             throw new InvalidAccessTokenException("Missing or invalid Drip access token.");
         }
         $this->access_token = $access_token;
-
-        $this->bearer_auth = true;
     }
 
     /**
@@ -461,7 +457,6 @@ class Client
         ]);
 
         $req_params = [
-            'auth' => [$this->api_key, ''],
             'timeout' => $this->timeout,
             'connect_timeout' => $this->connect_timeout,
             'headers' => [
@@ -472,9 +467,10 @@ class Client
             'http_errors' => false,
         ];
 
-        if ($this->bearer_auth) {
+        if (!empty($this->api_key)) {
+            $req_params['auth'] = [$this->api_key, ''];
+        } else if (!empty($this->access_token)) {
             $req_params['headers']['Authorization'] = 'Bearer ' . $this->access_token;
-            unset($req_params['auth']);
         }
 
         switch ($req_method) {
