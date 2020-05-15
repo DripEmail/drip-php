@@ -47,6 +47,12 @@ final class ClientTest extends TestCase
         new \Drip\Client(["account_id" => "1234", "access_token" => ""]);
     }
 
+    public function testMissingCredentials()
+    {
+        $this->expectException(\Drip\Exception\InvalidArgumentException::class);
+        new \Drip\Client(["account_id" => "1234"]);
+    }
+
     public function testDeprecatedInvalidAccountId()
     {
         $this->expectException(\Drip\Exception\InvalidAccountIdException::class);

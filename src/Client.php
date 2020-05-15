@@ -60,8 +60,10 @@ class Client
         } else {
             if (array_key_exists('access_token', $params[0])) {
                 $this->bearer_auth_setup($params[0]['access_token']);
-            } else {
+            } else if (array_key_exists('api_key', $params[0])) {
                 $this->basic_auth_setup($params[0]['api_key']);
+            } else {
+                throw new InvalidArgumentException("Missing Drip API key or access token.");
             }
             $this->set_test_options($params[0]);
             $this->set_account_id($params[0]['account_id']);
