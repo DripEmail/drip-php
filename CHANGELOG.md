@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-* [#31](https://github.com/DripEmail/drip-php/pull/31) - Use Bearer authorization
 * Your improvement here!
+
+## 1.4.0
+
+* [#31](https://github.com/DripEmail/drip-php/pull/31) - Use Bearer authentication
 
 ## 1.3.0
 
