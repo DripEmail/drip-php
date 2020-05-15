@@ -60,24 +60,13 @@ class Client
                 $this->deprecated_constructor($params[0], $params[1]);
             }
         } else {
-            $account_id = trim($params[0]['account_id']);
             if (array_key_exists('access_token', $params[0])) {
                 $this->bearer_auth_setup($params[0]['access_token']);
             } else {
                 $this->basic_auth_setup($params[0]['api_key']);
             }
-
-            if (array_key_exists('api_end_point', $params[0])) {
-                $this->api_end_point = $params[0]['api_end_point'];
-            }
-            if (array_key_exists('guzzle_stack_constructor', $params[0])) {
-                $this->guzzle_stack_constructor = $params[0]['guzzle_stack_constructor'];
-            }
-
-            if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
-                throw new InvalidAccountIdException("Missing or invalid Drip account ID.");
-            }
-            $this->account_id = $account_id;
+            $this->set_test_options($params[0]);
+            $this->set_account_id($params[0]['account_id']);
         }//end if
     }
 
@@ -93,22 +82,9 @@ class Client
      */
     protected function deprecated_constructor($api_key, $account_id, $options = [])
     {
-        $account_id = trim($account_id);
         $this->basic_auth_setup($api_key);
-
-        if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
-            throw new InvalidAccountIdException("Missing or invalid Drip account ID.");
-        }
-        $this->account_id = $account_id;
-
-        if (array_key_exists('api_end_point', $options)) {
-            $this->api_end_point = $options['api_end_point'];
-        }
-        // NOTE: For testing. Could break at any time, please do not depend on this.
-        if (array_key_exists('guzzle_stack_constructor', $options)) {
-            $this->guzzle_stack_constructor = $options['guzzle_stack_constructor'];
-        }
-        // TODO: allow setting timeouts
+        $this->set_account_id($account_id);
+        $this->set_test_options($options);
     }
 
     /**
@@ -137,6 +113,36 @@ class Client
         $this->access_token = $access_token;
 
         $this->bearer_auth = true;
+    }
+
+    /**
+     * @param string $account_id
+     * @throws Exception
+     */
+    protected function set_account_id($account_id)
+    {
+        $account_id = trim($account_id);
+        if (empty($account_id) || !preg_match('#^[\w-]+$#si', $account_id)) {
+            throw new InvalidAccountIdException("Missing or invalid Drip account ID.");
+        }
+        $this->account_id = $account_id;
+    }
+
+    /**
+     * @param array  $options
+     *               * `api_end_point`
+     *               * `guzzle_stack_constructor`
+     */
+    protected function set_test_options($options)
+    {
+        if (array_key_exists('api_end_point', $options)) {
+            $this->api_end_point = $options['api_end_point'];
+        }
+        // NOTE: For testing. Could break at any time, please do not depend on this.
+        if (array_key_exists('guzzle_stack_constructor', $options)) {
+            $this->guzzle_stack_constructor = $options['guzzle_stack_constructor'];
+        }
+        // TODO: allow setting timeouts
     }
 
     /**
