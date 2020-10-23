@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Your improvement here!
 
+## 1.4.1
+
+* [#32](https://github.com/DripEmail/drip-php/pull/32) - Use Guzzle 7
+* Related to previous, drop support for PHP older than 7.2.
+
 ## 1.4.0
 
 * [#31](https://github.com/DripEmail/drip-php/pull/31) - Use Bearer authentication
