@@ -269,12 +269,14 @@ class Client
     /**
      * Returns a list of subscribers
      *
+     * @param array $params     Set of arguments
+     *                          - optional
      * @return \Drip\ResponseInterface
      */
-    public function fetch_subscribers()
+    public function fetch_subscribers($params = null)
     {
 
-        return $this->make_request("$this->account_id/subscribers");
+        return $this->make_request("$this->account_id/subscribers", $params);
     }
 
     /**
@@ -325,6 +327,21 @@ class Client
 
         $subscriber_id = urlencode($subscriber_id);
         return $this->make_request("$this->account_id/subscribers/$subscriber_id/unsubscribe", $params, self::POST);
+    }
+
+    /**
+     * Sends a request to add/update a batch (up to 1000) of subscribers
+     *
+     * @param array $params
+     * @return \Drip\ResponseInterface
+     */
+    public function unsubscribe_subscribers($params)
+    {
+        return $this->make_request(
+            "$this->account_id/unsubscribes/batches",
+            $params,
+            self::POST
+        );
     }
 
     /**
