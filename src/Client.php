@@ -66,7 +66,7 @@ class Client
 
         if (array_key_exists('access_token', $params[0])) {
             $this->bearer_auth_setup($params[0]['access_token']);
-        } else if (array_key_exists('api_key', $params[0])) {
+        } elseif (array_key_exists('api_key', $params[0])) {
             $this->basic_auth_setup($params[0]['api_key']);
         } else {
             throw new InvalidArgumentException("Missing Drip API key or access token.");
@@ -190,7 +190,7 @@ class Client
         $campaign_id = $params['campaign_id'];
         unset($params['campaign_id']); // clear it from the params
 
-        return $this->make_request("{$this->account_id}/campaigns/$campaign_id", $params);
+        return $this->make_request("{$this->account_id}/campaigns/{$campaign_id}", $params);
     }
 
     /**
@@ -215,7 +215,7 @@ class Client
         // The API wants the params to be JSON encoded
         return $this->make_request(
             "{$this->account_id}/subscribers",
-            array('subscribers' => [$params]),
+            ['subscribers' => [$params]],
             self::POST
         );
     }
@@ -365,7 +365,7 @@ class Client
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
-        } else if (!empty($params['email'])) {
+        } elseif (!empty($params['email'])) {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
@@ -499,7 +499,7 @@ class Client
 
         if (!empty($this->api_key)) {
             $req_params['auth'] = [$this->api_key, ''];
-        } else if (!empty($this->access_token)) {
+        } elseif (!empty($this->access_token)) {
             $req_params['headers']['Authorization'] = 'Bearer ' . $this->access_token;
         }
 
