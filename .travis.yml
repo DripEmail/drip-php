@@ -5,5 +5,7 @@ php:
   - '7.4'
 install:
   - 'make install'
+before_script:
+  - 'echo "xdebug.mode = coverage" >>~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini'
 script:
   - 'make test lint'
