@@ -1,0 +1,27 @@
+name: Drip PHP API Client Tests
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-php@v3
+      - run: make install
+      - run: make test lint
+    strategy:
+      matrix:
+        php:
+          - '7.2'
+          - '7.3'
+          - '7.4'
+# language: php
+# php:
+#   - '7.2'
+#   - '7.3'
+#   - '7.4'
+# install:
+#   - 'make install'
+# before_script:
+#   - 'echo "xdebug.mode = coverage" >>~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini'
+# script:
+#   - 'make test lint'
