@@ -66,7 +66,7 @@ class Client
 
         if (array_key_exists('access_token', $params[0])) {
             $this->bearer_auth_setup($params[0]['access_token']);
-        } elseif (array_key_exists('api_key', $params[0])) {
+        } else if (array_key_exists('api_key', $params[0])) {
             $this->basic_auth_setup($params[0]['api_key']);
         } else {
             throw new InvalidArgumentException("Missing Drip API key or access token.");
@@ -167,7 +167,8 @@ class Client
         if (
             isset($params['status'])
             && !in_array($params['status'], ['active', 'draft', 'paused', 'all'])
-        ) {
+        )
+        {
             throw new InvalidArgumentException("Invalid campaign status.");
         }
 
@@ -247,7 +248,7 @@ class Client
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
-        } elseif (!empty($params['email'])) {
+        } else if (!empty($params['email'])) {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
@@ -271,7 +272,7 @@ class Client
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
-        } elseif (!empty($params['email'])) {
+        } else if (!empty($params['email'])) {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
@@ -338,7 +339,7 @@ class Client
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
-        } elseif (!empty($params['email'])) {
+        } else if (!empty($params['email'])) {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
@@ -365,7 +366,7 @@ class Client
         if (!empty($params['subscriber_id'])) {
             $subscriber_id = $params['subscriber_id'];
             unset($params['subscriber_id']); // clear it from the params
-        } elseif (!empty($params['email'])) {
+        } else if (!empty($params['email'])) {
             $subscriber_id = $params['email'];
             unset($params['email']); // clear it from the params
         } else {
@@ -499,7 +500,7 @@ class Client
 
         if (!empty($this->api_key)) {
             $req_params['auth'] = [$this->api_key, ''];
-        } elseif (!empty($this->access_token)) {
+        } else if (!empty($this->access_token)) {
             $req_params['headers']['Authorization'] = 'Bearer ' . $this->access_token;
         }
 
@@ -522,8 +523,6 @@ class Client
 
         $res = $client->request($req_method, $url, $req_params);
 
-        return $this->is_success_response($res->getStatusCode())
-            ? new \Drip\SuccessResponse($url, $params, $res)
-            : new \Drip\ErrorResponse($url, $params, $res);
+        return $this->is_success_response($res->getStatusCode()) ? new \Drip\SuccessResponse($url, $params, $res) : new \Drip\ErrorResponse($url, $params, $res);
     }
 }
