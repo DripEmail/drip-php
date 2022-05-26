@@ -164,11 +164,7 @@ class Client
      */
     public function get_campaigns($params)
     {
-        if (
-            isset($params['status'])
-            && !in_array($params['status'], ['active', 'draft', 'paused', 'all'])
-        )
-        {
+        if (isset($params['status']) && !in_array($params['status'], ['active', 'draft', 'paused', 'all'])) {
             throw new InvalidArgumentException("Invalid campaign status.");
         }
 
