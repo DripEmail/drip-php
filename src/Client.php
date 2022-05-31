@@ -16,7 +16,7 @@ use Drip\Exception\UnexpectedHttpVerbException;
  */
 class Client
 {
-    const VERSION = '1.4.1';
+    const VERSION = '1.4.2';
 
     /** @var string */
     protected $api_key = '';
