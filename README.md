@@ -33,4 +33,4 @@ the "list accounts" endpoint.
 
 We attempt to support versions of PHP that are supported upstream: http://php.net/supported-versions.php
 
-For the actual supported list, see `.travis.yml`.
+For the actual supported list, see `.github/workflows/build.yml`.
