@@ -2,7 +2,7 @@
 
 An object-oriented PHP wrapper for Drip's REST API v2.0
 
-[![Build Status](https://travis-ci.org/DripEmail/drip-php.svg?branch=master)](https://travis-ci.org/DripEmail/drip-php)
+[![Drip PHP API Client Tests](https://github.com/DripEmail/drip-php/actions/workflows/build.yml/badge.svg)](https://github.com/DripEmail/drip-php/actions/workflows/build.yml)
 
 ## Installation
 
