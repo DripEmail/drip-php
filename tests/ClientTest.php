@@ -510,6 +510,9 @@ final class ClientTest extends TestCase
         $response = $client->untag_subscriber(['email' => 'test@example.com']);
     }
 
+    // Shopper Activity (v3)
+    // Todo add tests for the create_or_update_cart, create_or_update_order, and create_or_update_product methods.
+
     ////////////////////////// E V E N T S //////////////////////////
 
     // #record_event
