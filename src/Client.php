@@ -17,7 +17,7 @@ use Exception;
  */
 class Client
 {
-    const VERSION = '1.4.2';
+    const VERSION = '1.5.0';
 
     /** @var string */
     protected $api_key = '';
