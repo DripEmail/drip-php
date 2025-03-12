@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Your improvement here!
 
+## 1.5.0
+
+* Adds shopper activity v3 end points (Thanks @RickKukiela!)
+
 ## 1.4.2
 
 * Update composer.json to allow newer PHP.

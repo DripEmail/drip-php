@@ -17,7 +17,7 @@ use Exception;
  */
 class Client
 {
-    const VERSION = '1.4.2';
+    const VERSION = '1.5.0';
 
     /** @var string */
     protected $api_key = '';
@@ -450,7 +450,7 @@ class Client
      */
     public function create_or_update_cart($params)
     {
-        if(strstr($this->api_end_point, '/v3') === false) {
+        if (strstr($this->api_end_point, '/v3') === false) {
             throw new Exception(__CLASS__ . '::' . __METHOD__ . ' only supports the APIv3 endpoint.');
         }
         return $this->make_request("$this->account_id/shopper_activity/cart", $params, self::POST);
@@ -467,7 +467,7 @@ class Client
      */
     public function create_or_update_order($params)
     {
-        if(strstr($this->api_end_point, '/v3') === false) {
+        if (strstr($this->api_end_point, '/v3') === false) {
             throw new Exception(__CLASS__ . '::' . __METHOD__ . ' only supports the APIv3 endpoint.');
         }
         return $this->make_request("$this->account_id/shopper_activity/order", $params, self::POST);
@@ -484,7 +484,7 @@ class Client
      */
     public function create_or_update_product($params)
     {
-        if(strstr($this->api_end_point, '/v3') === false) {
+        if (strstr($this->api_end_point, '/v3') === false) {
             throw new Exception(__CLASS__ . '::' . __METHOD__ . ' only supports the APIv3 endpoint.');
         }
         return $this->make_request("$this->account_id/shopper_activity/product", $params, self::POST);
