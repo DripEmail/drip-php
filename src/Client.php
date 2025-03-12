@@ -8,6 +8,7 @@ use Drip\Exception\InvalidApiKeyException;
 use Drip\Exception\InvalidAccessTokenException;
 use Drip\Exception\InvalidAccountIdException;
 use Drip\Exception\UnexpectedHttpVerbException;
+use Exception;
 
 /**
  * Drip API
@@ -48,7 +49,7 @@ class Client
      *               * `account_id` e.g. "123456"
      *               * `api_end_point` (mostly for Drip internal testing)
      *               * `guzzle_stack_constructor` (for test suite, may break at any time, do not use)
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(...$params)
     {
@@ -84,7 +85,7 @@ class Client
      * @param array{api_end_point?:string, guzzle_stack_constructor?:callable} $options
      *               * `api_end_point` (for test suite)
      *               * `guzzle_stack_constructor` (for test suite)
-     * @throws \Exception
+     * @throws Exception
      */
     protected function deprecated_constructor($api_key, $account_id, $options = [])
     {
@@ -95,7 +96,7 @@ class Client
 
     /**
      * @param string $api_key
-     * @throws \Exception
+     * @throws Exception
      */
     protected function basic_auth_setup($api_key)
     {
@@ -109,7 +110,7 @@ class Client
 
     /**
      * @param string $access_token
-     * @throws \Exception
+     * @throws Exception
      */
     protected function bearer_auth_setup($access_token)
     {
@@ -123,7 +124,7 @@ class Client
 
     /**
      * @param string $account_id
-     * @throws \Exception
+     * @throws Exception
      */
     protected function set_account_id($account_id)
     {
@@ -159,7 +160,7 @@ class Client
      *
      * @param array{status?:string} $params Set of arguments
      *                          - status (optional)
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function get_campaigns($params)
@@ -176,7 +177,7 @@ class Client
      *
      * @param array{campaign_id?:string} $params Set of arguments
      *                          - campaign_id (required)
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      */
     public function fetch_campaign($params)
     {
@@ -194,7 +195,7 @@ class Client
      * Requests the accounts for the given account.
      * Parses the response JSON and returns an array which contains: id, name, created_at etc
      *
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      */
     public function get_accounts()
     {
@@ -205,7 +206,7 @@ class Client
      * Sends a request to add a subscriber and returns its record or false.
      *
      * @param array<mixed> $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      */
     public function create_or_update_subscriber($params)
     {
@@ -221,7 +222,7 @@ class Client
      * Sends a request to add/update a batch (up to 1000) of subscribers.
      *
      * @param array<mixed> $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      */
     public function create_or_update_subscribers($params)
     {
@@ -236,7 +237,7 @@ class Client
      * Returns info regarding a particular subscriber
      *
      * @param array<mixed> $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function fetch_subscriber($params)
@@ -260,7 +261,7 @@ class Client
      * Returns info regarding a particular subscriber subscriptions to campaigns.
      *
      * @param array<mixed> $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function fetch_subscriber_campaigns($params)
@@ -283,7 +284,7 @@ class Client
     /**
      * Returns a list of subscribers
      *
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      */
     public function fetch_subscribers()
     {
@@ -294,7 +295,7 @@ class Client
      * Subscribes a user to a given campaign for a given account.
      *
      * @param array<mixed> $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function subscribe_subscriber($params)
@@ -327,7 +328,7 @@ class Client
      * Some keys are removed from the params so they don't get send with the other data to Drip.
      *
      * @param array<mixed> $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function unsubscribe_subscriber($params)
@@ -354,7 +355,7 @@ class Client
      * This calls DELETE /:account_id/subscribers/:id_or_email to delete a subscriber.
      *
      * @param array<mixed> $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function delete_subscriber($params)
@@ -377,7 +378,7 @@ class Client
      * This calls POST /:account_id/tags to add the tag. It just returns some status code no content
      *
      * @param array<mixed> $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function tag_subscriber($params)
@@ -400,7 +401,7 @@ class Client
      * This calls DELETE /:account_id/tags to remove the tags. It just returns some status code no content
      *
      * @param array $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function untag_subscriber($params)
@@ -423,7 +424,7 @@ class Client
      * Posts an event specified by the user.
      *
      * @param array $params
-     * @return \Drip\ResponseInterface
+     * @return ResponseInterface
      * @throw \Drip\Exception\InvalidArgumentException
      */
     public function record_event($params)
@@ -436,6 +437,57 @@ class Client
         $req_params = ['events' => [$params]];
 
         return $this->make_request("{$this->account_id}/events", $req_params, self::POST);
+    }
+
+    /**
+     * Posts a v3 Shopper Activity event to signal a shopping cart has been created or updated.
+     * Valid actions: created or updated
+     * @see https://developer.drip.com/#cart-activity
+     * @param array $params
+     * @return ResponseInterface
+     * @throw \Drip\Exception\InvalidArgumentException
+     * @throws Exception
+     */
+    public function create_or_update_cart($params)
+    {
+        if(strstr($this->api_end_point, '/v3') === false) {
+            throw new Exception(__CLASS__ . '::' . __METHOD__ . ' only supports the APIv3 endpoint.');
+        }
+        return $this->make_request("$this->account_id/shopper_activity/cart", $params, self::POST);
+    }
+
+    /**
+     * Posts a v3 Shopper Activity event to signal an order has been placed or moddifed.
+     * Valid actions: placed, updated, paid, fulfilled, refunded, or canceled
+     * @see https://developer.drip.com/#order-activity
+     * @param array $params
+     * @return ResponseInterface
+     * @throw \Drip\Exception\InvalidArgumentException
+     * @throws Exception
+     */
+    public function create_or_update_order($params)
+    {
+        if(strstr($this->api_end_point, '/v3') === false) {
+            throw new Exception(__CLASS__ . '::' . __METHOD__ . ' only supports the APIv3 endpoint.');
+        }
+        return $this->make_request("$this->account_id/shopper_activity/order", $params, self::POST);
+    }
+
+    /**
+     * Posts a v3 Shopper Activity event to signal a product has been created, updated or deleted.
+     * Valid actions: created, updated or deleted
+     * @see https://developer.drip.com/#product-activity
+     * @param array $params
+     * @return ResponseInterface
+     * @throw \Drip\Exception\InvalidArgumentException
+     * @throws Exception
+     */
+    public function create_or_update_product($params)
+    {
+        if(strstr($this->api_end_point, '/v3') === false) {
+            throw new Exception(__CLASS__ . '::' . __METHOD__ . ' only supports the APIv3 endpoint.');
+        }
+        return $this->make_request("$this->account_id/shopper_activity/product", $params, self::POST);
     }
 
     /**
@@ -463,8 +515,8 @@ class Client
      * @param string $url
      * @param array<mixed> $params
      * @param string $req_method
-     * @return \Drip\ResponseInterface
-     * @throws \Exception
+     * @return ResponseInterface
+     * @throws Exception
      */
     protected function make_request($url, $params = [], $req_method = self::GET)
     {
